@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateReservationDto } from './dto/create-reservation.dto';
-import { UpdateReservationDto } from './dto/update-reservation.dto';
+import { CreateReservationDto } from './dto';
+import { UpdateReservationDto } from './dto';
 import { ReservationsRepository } from './reservations.repository';
 
 @Injectable()
@@ -8,11 +8,11 @@ export class ReservationsService {
   constructor(
     private readonly reservationsRepository: ReservationsRepository,
   ) {}
-  create(createReservationDto: CreateReservationDto) {
+  create(createReservationDto: CreateReservationDto, userId: string) {
     return this.reservationsRepository.create({
       ...createReservationDto,
       timestamp: new Date(),
-      userId: '123',
+      userId,
       // charge: {
       //   ...createReservationDto.charge,
       //   amount: createReservationDto.charge.amount * 100,
