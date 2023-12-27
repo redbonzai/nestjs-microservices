@@ -24,8 +24,8 @@ export class ReservationsService {
             timestamp: new Date(),
             userId,
           });
-        })
-      )
+        }),
+      );
   }
 
   async findAll() {

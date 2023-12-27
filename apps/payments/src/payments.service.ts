@@ -14,6 +14,20 @@ export class PaymentsService {
     },
   );
 
+  // async createCharge({ card, amount, email }: PaymentsCreateChargeDto) {
+  //   const paymentMethod = await this.stripe.paymentMethods.create({
+  //     type: 'card',
+  //     card,
+  //   });
+  //
+  //   const paymentIntent = await this.stripe.paymentIntents.create({
+  //     payment_method: paymentMethod.id,
+  //     amount: amount * 100,
+  //     confirm: true,
+  //     payment_method_types: ['card'],
+  //     currency: 'usd',
+  //   });
+
   async createCharge({ /*card,*/ amount }: CreateChargeDto) {
     // const paymentMethod = await this.stripe.paymentMethods.create({
     //   type: 'card',
