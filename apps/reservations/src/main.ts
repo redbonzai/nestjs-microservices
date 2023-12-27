@@ -13,4 +13,6 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   await app.listen(configService.get('PORT'));
 }
-bootstrap().then(() => console.log('Reservations service is running'));
+bootstrap().then(() =>
+  console.log('Reservation service is bootstrapped and running'),
+);
