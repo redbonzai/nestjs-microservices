@@ -45,7 +45,8 @@
     "pino-pretty": "^10.3.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
-    "stripe": "^14.10.0"
+    "stripe": "^14.10.0",
+    "tcp-ping": "^0.1.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

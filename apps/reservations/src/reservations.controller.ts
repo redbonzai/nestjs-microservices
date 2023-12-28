@@ -24,7 +24,7 @@ export class ReservationsController {
     @Body() createReservationDto: CreateReservationDto,
     @CurrentUser() user: UserDto,
   ) {
-    const _user = await this.reservationsService.create(
+    const reservation = await this.reservationsService.create(
       createReservationDto,
       user,
     );
