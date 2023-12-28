@@ -24,12 +24,6 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @MessagePattern('authenticate')
   async authenticate(@Payload() payload: any) {
-    console.log('AUTHENTICATED USER PAYLOAD: ', JSON.stringify(payload));
     return payload.user;
-  }
-
-  @Get()
-  getHello(): string {
-    return this.authService.getHello();
   }
 }
