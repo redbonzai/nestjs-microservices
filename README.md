@@ -45,6 +45,12 @@ $ pnpm run start:dev
 $ pnpm run start:prod
 ```
 
+## ENV FILES
+Every service has it's own .env.example file that contains the env keys that are needed in the current version. Run the following command on all the ENVs to turn them into .env files
+```bash
+mv .env.example .env
+```
+
 ## Setting Up MongoDB For Local Development (MAC OS & Linux)
 >See this DOC FILE for more info FIRST: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/
 Enter the following commands in the terminal: 
