@@ -83,6 +83,9 @@ dependencies:
   stripe:
     specifier: ^14.10.0
     version: 14.10.0
+  tcp-ping:
+    specifier: ^0.1.1
+    version: 0.1.1
 
 devDependencies:
   '@nestjs/cli':
@@ -5546,6 +5549,10 @@ packages:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
     engines: {node: '>=6'}
     dev: true
+
+  /tcp-ping@0.1.1:
+    resolution: {integrity: sha512-7Ed10Ds0hYnF+O1lfiZ2iSZ1bCAj+96Madctebmq7Y1ALPWlBY4YI8C6pCL+UTlshFY5YogixKLpgDP/4BlHrw==}
+    dev: false
 
   /terser-webpack-plugin@5.3.9(webpack@5.89.0):
     resolution: {integrity: sha512-ZuXsqE07EcggTWQjXUj+Aot/OMcD0bMKGgF63f7UxYcu5/AJF53aIpK1YoP5xR9l6s/Hy2b+t1AM0bLNPRuhwA==}
