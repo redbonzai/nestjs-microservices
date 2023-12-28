@@ -1,5 +1,9 @@
-import Stripe from 'stripe';
-import { IsDefined, IsNotEmptyObject, IsNumber, ValidateNested } from 'class-validator';
+import {
+  IsDefined,
+  IsNotEmptyObject,
+  IsNumber,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { CardDto } from '@app/common';
 
@@ -10,6 +14,8 @@ export class CreateChargeDto {
   @Type(() => CardDto)
   card: CardDto;
 
+  // @IsString()
+  // description: string;
   @IsNumber()
   amount: number;
 }

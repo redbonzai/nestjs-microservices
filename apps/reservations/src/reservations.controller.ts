@@ -26,10 +26,10 @@ export class ReservationsController {
   ) {
     const _user = await this.reservationsService.create(
       createReservationDto,
-      user._id,
+      user,
     );
-    console.log('USER RESERVATION CREATED: ', user);
-    return _user;
+    console.log('USER RESERVATION CREATED: ', reservation);
+    return reservation;
   }
 
   @Get()

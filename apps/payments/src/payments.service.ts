@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import Stripe from 'stripe';
 import { ConfigService } from '@nestjs/config';
-import { CreateChargeDto } from '@app/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { NOTIFICATIONS_SERVICE } from '@app/common';
+import { PaymentsCreateChargeDto } from './dto';
 
 @Injectable()
 export class PaymentsService {
-  constructor(private readonly configService: ConfigService) {}
   private readonly stripe = new Stripe(
     this.configService.get<string>('STRIPE_SECRET_KEY'),
     {
@@ -13,6 +14,12 @@ export class PaymentsService {
       typescript: true,
     },
   );
+
+  constructor(
+    private readonly configService: ConfigService,
+    @Inject(NOTIFICATIONS_SERVICE)
+    private readonly notificationsService: ClientProxy,
+  ) {}
 
   // async createCharge({ card, amount, email }: PaymentsCreateChargeDto) {
   //   const paymentMethod = await this.stripe.paymentMethods.create({
@@ -28,7 +35,7 @@ export class PaymentsService {
   //     currency: 'usd',
   //   });
 
-  async createCharge({ /*card,*/ amount }: CreateChargeDto) {
+  async createCharge({ /*card,*/ amount, email }: PaymentsCreateChargeDto) {
     // const paymentMethod = await this.stripe.paymentMethods.create({
     //   type: 'card',
     //   card,
@@ -41,6 +48,14 @@ export class PaymentsService {
       currency: 'usd',
       payment_method: 'pm_card_visa',
       return_url: 'https://www.w3schools.com',
+    });
+
+    this.notificationsService.emit('notify_email', {
+      email,
+      subject: `reservation confirmed`,
+      text: `Your payment of $${parseFloat(
+        amount.toFixed(2).toString(),
+      )} has completed successfully`,
     });
 
     return paymentIntent;
