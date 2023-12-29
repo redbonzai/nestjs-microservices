@@ -49,6 +49,8 @@
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",
+    "@nrwl/cli": "^15.9.3",
+    "@nrwl/workspace": "^17.2.8",
     "@types/cookie-parser": "^1.4.6",
     "@types/express": "^4.17.17",
     "@types/jest": "^29.5.2",
