@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { AUTH_SERVICE } from '@app/common/constants/services';
 import { ClientProxy } from '@nestjs/microservices';
-import { catchError, map, Observable, of, tap } from "rxjs";
+import { catchError, map, Observable, of, tap } from 'rxjs';
 import { UserDto } from '@app/common';
 
 @Injectable()
