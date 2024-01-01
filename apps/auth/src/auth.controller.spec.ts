@@ -2,9 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
-import { UserDocument, UserDto } from '@app/common';
-import { JwtModule, JwtService } from "@nestjs/jwt";
-import { ConfigModule, ConfigService } from "@nestjs/config";
+import { UserDocument } from '@app/common';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 describe('AuthController', () => {
   let authController: AuthController;
@@ -27,9 +27,7 @@ describe('AuthController', () => {
         {
           provide: AuthService,
           useValue: {
-            login: jest
-              .fn()
-              .mockImplementation((user, response) => 'test-token'), // Mock implementation
+            login: jest.fn().mockImplementation(() => 'test-token'), // Mock implementation
           },
         },
         JwtService,
