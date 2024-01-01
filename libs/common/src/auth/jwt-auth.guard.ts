@@ -5,15 +5,19 @@ import {
   Injectable,
   Logger,
 } from '@nestjs/common';
-import { AUTH_SERVICE } from '@app/common/constants/services';
 import { ClientProxy } from '@nestjs/microservices';
+import { Reflector } from '@nestjs/core';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { UserDto } from '@app/common';
+import { AUTH_SERVICE } from '@app/common/constants/services';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   private readonly logger = new Logger(JwtAuthGuard.name);
-  constructor(@Inject(AUTH_SERVICE) private readonly authClient: ClientProxy) {}
+  constructor(
+    @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
+    private readonly reflector: Reflector,
+  ) {}
 
   canActivate(
     context: ExecutionContext,
@@ -25,12 +29,21 @@ export class JwtAuthGuard implements CanActivate {
     if (!jwt) {
       return false;
     }
+
+    const roles = this.reflector.get<string[]>('roles', context.getHandler());
+    console.log('ROLES IN JET-AUTH.GUARD: ', roles);
+
     return this.authClient
       .send<UserDto>('authenticate', {
         Authentication: jwt,
       })
       .pipe(
         tap((res: UserDto) => {
+          for (const role of roles) {
+            if (!res.roles.includes(role)) {
+              throw new Error('INSUFFICIENT PERMISSIONS');
+            }
+          }
           context.switchToHttp().getRequest().user = res;
         }), // return true if we can authenticate the user.
         map(() => true), // returns true on successful response from auth ms.
