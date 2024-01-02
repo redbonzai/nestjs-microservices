@@ -1,2 +1,2 @@
 export * from './package-reader';
-export * from './users.utils';
+export * from './service.utils';

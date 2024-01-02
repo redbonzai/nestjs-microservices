@@ -17,6 +17,8 @@ import {
   ReservationDocument,
   ReservationSchema,
 } from './models/reservation.schema';
+import { UsersModule } from 'apps/auth/src/users/users.module';
+import { UsersRepository } from 'apps/auth/src/users/users.repository';
 
 @Module({
   imports: [
@@ -60,6 +62,7 @@ import {
         inject: [ConfigService],
       },
     ]),
+    UsersModule,
   ],
   controllers: [ReservationsController],
   providers: [
@@ -69,6 +72,7 @@ import {
     },
     ReservationsService,
     ReservationsRepository,
+    UsersRepository,
   ],
 })
 export class ReservationsModule {}

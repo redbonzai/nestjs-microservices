@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   Logger,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Reflector } from '@nestjs/core';
@@ -30,8 +31,9 @@ export class JwtAuthGuard implements CanActivate {
       return false;
     }
 
-    const roles = this.reflector.get<string[]>('roles', context.getHandler());
-    console.log('ROLES IN JET-AUTH.GUARD: ', roles);
+    const roles =
+      this.reflector.get<string[]>('roles', context.getHandler()) || [];
+    console.log('ROLES IN JWT-AUTH.GUARD: ', roles);
 
     return this.authClient
       .send<UserDto>('authenticate', {
@@ -41,13 +43,24 @@ export class JwtAuthGuard implements CanActivate {
         tap((res: UserDto) => {
           for (const role of roles) {
             if (!res.roles.includes(role)) {
-              throw new Error('INSUFFICIENT PERMISSIONS');
+              this.logger.error('INSUFFICIENT PERMISSIONS');
+              throw new UnauthorizedException('INSUFFICIENT PERMISSIONS');
             }
           }
           context.switchToHttp().getRequest().user = res;
         }), // return true if we can authenticate the user.
         map(() => true), // returns true on successful response from auth ms.
-        catchError(() => of(false)), // returns false on error from auth ms.
+        catchError((error) => {
+          console.error('ERROR IN JWT-AUTH.GUARD', error);
+          this.logger.error('ERROR IN JWT-AUTH.GUARD');
+          return of(false);
+        }), // returns false on error from auth ms.
       );
+
+    // function jwtError(error) {
+    //   console.error('ERROR IN JWT-AUTH.GUARD: ', error);
+    //   this.logger.error(error);
+    //   return of(false); // returns false on error from auth ms.
+    // }
   }
 }

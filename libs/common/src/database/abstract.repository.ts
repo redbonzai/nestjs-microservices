@@ -66,7 +66,7 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
         'Attempted to delete a non-existent document with filterQuery',
         filterQuery,
       );
-      throw new NotFoundException('YER MOM was not found');
+      throw new NotFoundException('resource was not found');
     }
 
     return deletedDocument;
