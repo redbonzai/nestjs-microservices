@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
@@ -22,17 +22,22 @@ export class AuthService {
     );
 
     const token = this.jwtService.sign(tokenPayload);
-    // const token = this.jwtService.sign(tokenPayload, {
-    //   secret: this.configService.get('JWT_SECRET'),
-    //   expiresIn: this.configService.get('JWT_EXPIRATION'),
-    // });
-    //
-
+    console.log('TOKEN IN AUTH.SERVICE: ', token);
     response.cookie('Authentication', token, {
       httpOnly: true,
       expires,
     });
 
     return token;
+  }
+
+  // async logout(response: Response) {
+  //   response.clearCookie('Authentication');
+  // }
+  async logout(response: Response): Promise<{ message: string }> {
+    response.clearCookie('Authentication');
+    return {
+      message: 'Authentication successfully cleared',
+    };
   }
 }
