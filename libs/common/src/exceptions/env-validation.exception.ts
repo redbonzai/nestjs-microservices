@@ -7,7 +7,7 @@ export class EnvValidationException extends HttpException {
     const responseBody = {
       error: 'MISSING ENV ELEMENTS WITHIN AT LEAST ONE SERVICE',
       errorType: ErrorType.INTERNAL_SERVER_ERROR,
-      statusCode: HttpStatus.INTERNAL_SERVER_ERROR
+      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
     };
     super(responseBody, responseBody.statusCode);
   }

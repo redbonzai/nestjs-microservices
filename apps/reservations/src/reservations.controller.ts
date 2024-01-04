@@ -29,6 +29,7 @@ export class ReservationsController {
     @Body() createReservationDto: CreateReservationDto,
     @CurrentUser() user: UserDto,
   ): Promise<ReservationDocument> {
+    console.log('REQUEST BODY FOR CREATED RESERVATION : ', user);
     return await this.reservationsService.create(createReservationDto, user);
   }
 

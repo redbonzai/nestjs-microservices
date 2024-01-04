@@ -1,4 +1,4 @@
-import { ExecutionContext, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
@@ -31,9 +31,6 @@ export class AuthService {
     return token;
   }
 
-  // async logout(response: Response) {
-  //   response.clearCookie('Authentication');
-  // }
   async logout(response: Response): Promise<{ message: string }> {
     response.clearCookie('Authentication');
     return {

@@ -20,8 +20,14 @@ export class UsersController {
 
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
+    console.log('REQUEST BODY FOR CREATED RESERVATION : ', createUserDto);
     return this.usersService.create(createUserDto);
   }
+
+  // @Post('role')
+  // async addRole(@Body() body: any) {
+  //   return this.usersService.addRole(body.userId, body.roleId);
+  // }
 
   @Get()
   @UseGuards(JwtAuthGuard)
