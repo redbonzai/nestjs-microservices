@@ -1,5 +1,6 @@
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
+import {GetUserDto} from "../../../../apps/auth/src/users/dto/get-user.dto";
 
 /**
  * Transforms an identifier into a DTO object, validating the result.
@@ -33,4 +34,21 @@ export async function identifierToDto<
 
   // Return the validated DTO instance.
   return dtoInstance;
+}
+
+
+async function multipleIdentifiersToDtos<DtoType extends object>(
+    transformations: {
+      dtoClass: new () => DtoType,
+      identifier: any,
+      identifierFieldName: keyof DtoType
+    }[]
+): Promise<DtoType[]> {
+  return Promise.all(transformations.map(transformation =>
+      identifierToDto(
+          transformation.dtoClass,
+          transformation.identifier,
+          transformation.identifierFieldName
+      )
+  ));
 }

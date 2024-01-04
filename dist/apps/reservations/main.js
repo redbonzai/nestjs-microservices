@@ -360,20 +360,56 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ReservationsRepository = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const abstract_repository_1 = __webpack_require__(/*! @app/common/database/abstract.repository */ "./libs/common/src/database/abstract.repository.ts");
-const mongoose_1 = __webpack_require__(/*! mongoose */ "mongoose");
+const mongoose_1 = __webpack_require__(/*! @nestjs/mongoose */ "@nestjs/mongoose");
+const mongoose_2 = __webpack_require__(/*! mongoose */ "mongoose");
+const mongoose = __webpack_require__(/*! mongoose */ "mongoose");
 const reservation_schema_1 = __webpack_require__(/*! ./models/reservation.schema */ "./apps/reservations/src/models/reservation.schema.ts");
-const mongoose_2 = __webpack_require__(/*! @nestjs/mongoose */ "@nestjs/mongoose");
 let ReservationsRepository = ReservationsRepository_1 = class ReservationsRepository extends abstract_repository_1.AbstractRepository {
     constructor(reservationModel) {
         super(reservationModel);
         this.logger = new common_1.Logger(ReservationsRepository_1.name);
+        this.reservationModel = reservationModel;
+    }
+    async getUserReservationByReservationId(userId, reservationId) {
+        return this.reservationModel.findOne({ userId, _id: reservationId }).exec();
+    }
+    async getUserReservation(reservationId) {
+        const objectId = new mongoose.Types.ObjectId(reservationId);
+        const result = await this.reservationModel.aggregate([
+            { $match: { _id: objectId } },
+            {
+                $addFields: {
+                    convertedUserId: { $toObjectId: '$userId' },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'userdocuments',
+                    localField: 'convertedUserId',
+                    foreignField: '_id',
+                    as: 'user',
+                },
+            },
+            {
+                $unwind: {
+                    path: '$user',
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $project: {
+                    'user.password': 0,
+                },
+            },
+        ]);
+        return result[0];
     }
 };
 exports.ReservationsRepository = ReservationsRepository;
 exports.ReservationsRepository = ReservationsRepository = ReservationsRepository_1 = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_2.InjectModel)(reservation_schema_1.ReservationDocument.name)),
-    __metadata("design:paramtypes", [typeof (_a = typeof mongoose_1.Model !== "undefined" && mongoose_1.Model) === "function" ? _a : Object])
+    __param(0, (0, mongoose_1.InjectModel)(reservation_schema_1.ReservationDocument.name)),
+    __metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object])
 ], ReservationsRepository);
 
 
@@ -414,7 +450,7 @@ let ReservationsService = class ReservationsService {
     async create(createReservationDto, { email, _id: userId }) {
         console.log("ABOUT TO CREATE RESERVATION UNDER EMAIL: ", email);
         return this.paymentsService
-            .send("create_charge", {
+            .send('create_charge', {
             ...createReservationDto.charge,
             email,
         })
@@ -1008,6 +1044,54 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 /***/ }),
 
+/***/ "./libs/common/src/enums/error-types.enum.ts":
+/*!***************************************************!*\
+  !*** ./libs/common/src/enums/error-types.enum.ts ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ErrorType = void 0;
+var ErrorType;
+(function (ErrorType) {
+    ErrorType["DATABASE_ERROR"] = "DATABASE_ERROR";
+    ErrorType["NETWORK_ERROR"] = "NETWORK_ERROR";
+    ErrorType["PERMISSION_DENIED"] = "PERMISSION_DENIED";
+    ErrorType["RESERVATION_CREATION_ERROR"] = "RESERVATION_CREATION_ERROR";
+    ErrorType["INTERNAL_SERVER_ERROR"] = "INTERNAL_SERVER_ERROR";
+})(ErrorType || (exports.ErrorType = ErrorType = {}));
+
+
+/***/ }),
+
+/***/ "./libs/common/src/enums/index.ts":
+/*!****************************************!*\
+  !*** ./libs/common/src/enums/index.ts ***!
+  \****************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./error-types.enum */ "./libs/common/src/enums/error-types.enum.ts"), exports);
+
+
+/***/ }),
+
 /***/ "./libs/common/src/index.ts":
 /*!**********************************!*\
   !*** ./libs/common/src/index.ts ***!
@@ -1038,6 +1122,7 @@ __exportStar(__webpack_require__(/*! ./auth */ "./libs/common/src/auth/index.ts"
 __exportStar(__webpack_require__(/*! ./constants */ "./libs/common/src/constants/index.ts"), exports);
 __exportStar(__webpack_require__(/*! ./decorators */ "./libs/common/src/decorators/index.ts"), exports);
 __exportStar(__webpack_require__(/*! ./dto */ "./libs/common/src/dto/index.ts"), exports);
+__exportStar(__webpack_require__(/*! ./enums */ "./libs/common/src/enums/index.ts"), exports);
 __exportStar(__webpack_require__(/*! ./response */ "./libs/common/src/response/index.ts"), exports);
 __exportStar(__webpack_require__(/*! ./utilities */ "./libs/common/src/utilities/index.ts"), exports);
 
@@ -1310,6 +1395,9 @@ async function identifierToDto(dtoClass, identifier, identifierFieldName) {
     return dtoInstance;
 }
 exports.identifierToDto = identifierToDto;
+async function multipleIdentifiersToDtos(transformations) {
+    return Promise.all(transformations.map(transformation => identifierToDto(transformation.dtoClass, transformation.identifier, transformation.identifierFieldName)));
+}
 
 
 /***/ }),

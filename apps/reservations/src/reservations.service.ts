@@ -18,7 +18,7 @@ export class ReservationsService {
   ) {
     console.log("ABOUT TO CREATE RESERVATION UNDER EMAIL: ", email);
     return this.paymentsService
-      .send("create_charge", {
+      .send('create_charge', {
         ...createReservationDto.charge,
         email,
       })
@@ -54,4 +54,6 @@ export class ReservationsService {
   async remove(_id: string) {
     return this.reservationsRepository.findOneAndDelete({ _id });
   }
+
+
 }

@@ -796,6 +796,54 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 /***/ }),
 
+/***/ "./libs/common/src/enums/error-types.enum.ts":
+/*!***************************************************!*\
+  !*** ./libs/common/src/enums/error-types.enum.ts ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ErrorType = void 0;
+var ErrorType;
+(function (ErrorType) {
+    ErrorType["DATABASE_ERROR"] = "DATABASE_ERROR";
+    ErrorType["NETWORK_ERROR"] = "NETWORK_ERROR";
+    ErrorType["PERMISSION_DENIED"] = "PERMISSION_DENIED";
+    ErrorType["RESERVATION_CREATION_ERROR"] = "RESERVATION_CREATION_ERROR";
+    ErrorType["INTERNAL_SERVER_ERROR"] = "INTERNAL_SERVER_ERROR";
+})(ErrorType || (exports.ErrorType = ErrorType = {}));
+
+
+/***/ }),
+
+/***/ "./libs/common/src/enums/index.ts":
+/*!****************************************!*\
+  !*** ./libs/common/src/enums/index.ts ***!
+  \****************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(/*! ./error-types.enum */ "./libs/common/src/enums/error-types.enum.ts"), exports);
+
+
+/***/ }),
+
 /***/ "./libs/common/src/index.ts":
 /*!**********************************!*\
   !*** ./libs/common/src/index.ts ***!
@@ -826,6 +874,7 @@ __exportStar(__webpack_require__(/*! ./auth */ "./libs/common/src/auth/index.ts"
 __exportStar(__webpack_require__(/*! ./constants */ "./libs/common/src/constants/index.ts"), exports);
 __exportStar(__webpack_require__(/*! ./decorators */ "./libs/common/src/decorators/index.ts"), exports);
 __exportStar(__webpack_require__(/*! ./dto */ "./libs/common/src/dto/index.ts"), exports);
+__exportStar(__webpack_require__(/*! ./enums */ "./libs/common/src/enums/index.ts"), exports);
 __exportStar(__webpack_require__(/*! ./response */ "./libs/common/src/response/index.ts"), exports);
 __exportStar(__webpack_require__(/*! ./utilities */ "./libs/common/src/utilities/index.ts"), exports);
 
@@ -1098,6 +1147,9 @@ async function identifierToDto(dtoClass, identifier, identifierFieldName) {
     return dtoInstance;
 }
 exports.identifierToDto = identifierToDto;
+async function multipleIdentifiersToDtos(transformations) {
+    return Promise.all(transformations.map(transformation => identifierToDto(transformation.dtoClass, transformation.identifier, transformation.identifierFieldName)));
+}
 
 
 /***/ }),
