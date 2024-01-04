@@ -1,0 +1,38 @@
+version: 0.2
+
+env:
+  variables:
+    - services:
+        - name: "reservations"
+          dockerfile: "./apps/reservations/Dockerfile"
+        - name: "auth"
+          dockerfile: "./apps/auth/Dockerfile"
+        - name: "payments"
+          dockerfile: "./apps/payments/Dockerfile"
+        - name: "notifications"
+          dockerfile: "./apps/notifications/Dockerfile"
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 901872349189.dkr.ecr.us-east-1.amazonaws.com
+  build:
+    commands:
+      - echo Build started on `date`
+      # Loop through each service and build/push it
+      - |
+        for service in "${services[@]}"; do
+          serviceName="${service[name]}"
+          dockerfilePath="${service[dockerfile]}"
+        
+          echo Building the Docker image for $serviceName...
+          docker build -t $serviceName -f $dockerfilePath .
+          docker tag $serviceName:latest 901872349189.dkr.ecr.us-east-1.amazonaws.com/$serviceName:latest
+        
+          echo Pushing the Docker image for $serviceName...
+          docker push 901872349189.dkr.ecr.us-east-1.amazonaws.com/$serviceName:latest
+        done
+  post_build:
+    commands:
+      - echo Build completed on `date`
