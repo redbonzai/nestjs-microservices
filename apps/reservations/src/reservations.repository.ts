@@ -48,8 +48,36 @@ export class ReservationsRepository extends AbstractRepository<AbstractDocument>
         },
       },
     ]);
-    console.log('GET USER RESERVATION RESPONSE; ', result);
 
     return result[0]; // Assuming you're interested in a single reservation
+  }
+
+  async allReservationsWithUsers(): Promise<any[]> {
+    return this.reservationModel.aggregate([
+      {
+        $addFields: {
+          convertedUserId: { $toObjectId: '$userId' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'userdocuments',
+          localField: 'convertedUserId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          'user.password': 0,
+        },
+      },
+    ]);
   }
 }

@@ -1,13 +1,20 @@
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  HttpStatus,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { CreateReservationDto, UpdateReservationDto } from './dto';
 import { ReservationsRepository } from './reservations.repository';
-import { PAYMENTS_SERVICE, UserDto } from '@app/common';
+import { AbstractDocument, PAYMENTS_SERVICE, UserDto } from '@app/common';
 
 import { UsersRepository } from 'apps/auth/src/users/users.repository';
 import { ReservationCreationException } from './exceptions/reservation-creation.exception';
 import { ErrorType } from '@app/common/enums';
+import { Reservation } from './interfaces/reservation.interface';
+import { ReservationDocument } from './models/reservation.schema';
 
 @Injectable()
 export class ReservationsService {
@@ -42,11 +49,13 @@ export class ReservationsService {
         userId,
         reservation._id.toString(),
       );
+
       // return reservation and user response
       return await this.reservationsRepository.getUserReservation(
         reservation._id.toString(),
       );
     } catch (error) {
+      console.log('ERROR CREATING A RESERVATION: ', error);
       throw new ReservationCreationException(
         ErrorType.RESERVATION_CREATION_ERROR,
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -55,18 +64,35 @@ export class ReservationsService {
   }
 
   async findAll() {
-    return this.reservationsRepository.find({});
+    return this.reservationsRepository.allReservationsWithUsers();
   }
 
-  async findOne(_id: string) {
-    return this.reservationsRepository.findOne({ _id });
+  async findOne(_id: string): Promise<ReservationDocument> {
+    const reservation: AbstractDocument =
+      await this.reservationsRepository.findOne({
+        _id,
+      });
+
+    if (!reservation) {
+      throw new NotFoundException(`Reservation with ID ${_id} not found`);
+    }
+
+    return await this.reservationsRepository.getUserReservation(_id);
   }
 
-  async update(_id: string, updateReservationDto: UpdateReservationDto) {
-    return this.reservationsRepository.findOneAndUpdate(
+  async update(
+    _id: string,
+    updateReservationDto: UpdateReservationDto,
+  ): Promise<ReservationDocument> {
+    const reservation = await this.reservationsRepository.findOneAndUpdate(
       { _id },
       { $set: updateReservationDto },
     );
+    if (!reservation) {
+      throw new NotFoundException(`Reservation with ID ${_id} not found`);
+    }
+
+    return await this.reservationsRepository.getUserReservation(_id);
   }
 
   async remove(_id: string) {

@@ -4,9 +4,7 @@ import { Transport } from '@nestjs/microservices';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { Logger } from 'nestjs-pino';
-import * as Joi from 'joi';
 import { AuthModule } from './auth.module';
-import { validateEnvVariables } from '@app/common/validators';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
@@ -24,16 +22,6 @@ async function bootstrap() {
 
   await app.startAllMicroservices();
   await app.listen(configService.get('HTTP_PORT'));
-
-  validateEnvVariables(
-    Joi.object({
-      MONGODB_URI: Joi.string().required(),
-      JWT_SECRET: Joi.string().required(),
-      JWT_EXPIRATION: Joi.string().required(),
-      HTTP_PORT: Joi.number().required(),
-      TCP_PORT: Joi.number().required(),
-    }),
-  );
 }
 
 bootstrap().then(() => console.log('Auth service is bootstrapped amd running'));

@@ -13,7 +13,14 @@ export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   async create(createUserDto: CreateUserDto) {
-    await this.userExists(createUserDto);
+    if (await this.userExists(createUserDto)) {
+      throw new CreatedUserValidationException(
+        'User already exists',
+        ErrorType.USER_ALREADY_EXISTS,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
     return await this.usersRepository.create({
@@ -47,22 +54,11 @@ export class UsersService {
   }
 
   private async userExists(createUserDto: CreateUserDto) {
-    try {
-      if (
-        await this.usersRepository.findOne({
-          email: createUserDto.email,
-        })
-      ) {
-        throw new CreatedUserValidationException(
-          'Recently created user could not be validated',
-          ErrorType.USER_VALIDATION_ERROR,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    } catch (error) {
-      throw Error(error);
-    }
-    throw new UnauthorizedException('User already exists');
+    const user = await this.usersRepository.findOne({
+      email: createUserDto.email,
+    });
+
+    return Object(user).length > 0;
   }
 
   async verifyUser(email: string, password: string) {
@@ -76,5 +72,13 @@ export class UsersService {
 
   async addReservationToUser(userId: string, resId: string): Promise<void> {
     return await this.usersRepository.addReservationToUser(userId, resId);
+  }
+
+  async getUserPermissions(userId: string): Promise<string[]> {
+    return await this.usersRepository.getUserPermissions(userId);
+  }
+
+  async getUserRolesAndPermissions(userId: string): Promise<string[]> {
+    return await this.usersRepository.getUserRolesAndPermissions(userId);
   }
 }
