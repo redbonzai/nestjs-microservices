@@ -7,12 +7,14 @@ import {
   IsStrongPassword,
 } from 'class-validator';
 
-export class CreateUserDto {
+export class UpdateUserDto {
+  @IsOptional()
   @IsEmail()
-  email: string;
+  email?: string;
 
+  @IsOptional()
   @IsStrongPassword()
-  password: string;
+  password?: string;
 
   @IsOptional()
   @IsArray()

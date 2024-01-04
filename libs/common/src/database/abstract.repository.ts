@@ -48,12 +48,6 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     // return this.model.findByIdAndUpdate(id, data, { new: true }).exec();
   }
 
-  // async findOneAndDelete(
-  //   filterQuery: FilterQuery<TDocument>,
-  // ): Promise<TDocument> {
-  //   return this.model.findOneAndDelete(filterQuery).lean<TDocument>(true);
-  // }
-
   async findOneAndDelete(
     filterQuery: FilterQuery<TDocument>,
   ): Promise<TDocument> {
