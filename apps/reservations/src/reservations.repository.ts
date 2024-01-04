@@ -48,7 +48,6 @@ export class ReservationsRepository extends AbstractRepository<AbstractDocument>
         },
       },
     ]);
-    console.log('GET USER RESERVATION RESPONSE; ', result);
 
     return result[0]; // Assuming you're interested in a single reservation
   }
@@ -80,33 +79,5 @@ export class ReservationsRepository extends AbstractRepository<AbstractDocument>
         },
       },
     ]);
-
-    // const objectId = new mongoose.Types.ObjectId(userId);
-    // return this.reservationModel.aggregate([
-    //   // {
-    //   //   $addFields: {
-    //   //     convertedUserId: objectId, // { $toObjectId: '65966e5f80d88f17ea17dc22' }, // Convert userId to ObjectId
-    //   //   },
-    //   // },
-    //   {
-    //     $lookup: {
-    //       from: 'userdocuments', // The name of the user collection
-    //       localField: 'convertedUserId',
-    //       foreignField: '_id',
-    //       as: 'user',
-    //     },
-    //   },
-    //   {
-    //     $unwind: {
-    //       path: '$user',
-    //       preserveNullAndEmptyArrays: true, // Handle cases where no user is found
-    //     },
-    //   },
-    //   {
-    //     $project: {
-    //       'user.password': 0, // Exclude the password field
-    //     },
-    //   },
-    // ]);
   }
 }
