@@ -8,10 +8,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { CurrentUser, Roles } from '@app/common';
+import { CurrentUser, identifierToDTO, Roles } from '@app/common';
 import { JwtAuthGuard } from 'apps/auth/src/guards/jwt-auth.guard';
 import { UserDocument } from '@app/common';
 import { UsersService } from './users.service';
+import { GetUserDto } from './dto/get-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -46,6 +47,9 @@ export class UsersController {
     @Param('id') id: string,
     @Body() user: CreateUserDto,
   ): Promise<UserDocument> {
-    return this.usersService.update(id, user);
+    return this.usersService.update(
+      await identifierToDTO(GetUserDto, id, '_id'),
+      user,
+    );
   }
 }

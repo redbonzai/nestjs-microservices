@@ -1,13 +1,13 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { ErrorType } from '@app/common';
+import { ErrorType } from '@app/common/enums';
 
 export class CreatedUserValidationException extends HttpException {
-    constructor(errorType: ErrorType, statusCode: HttpStatus) {
-        const responseBody = {
-            error: 'ERecently created user could not be validated',
-            errorType,
-            statusCode,
-        };
-        super(responseBody, statusCode);
-    }
+  constructor(message: string, errorType: ErrorType, statusCode: HttpStatus) {
+    const responseBody = {
+      error: message,
+      errorType,
+      statusCode,
+    };
+    super(responseBody, statusCode);
+  }
 }
