@@ -7,6 +7,7 @@ import { PAYMENTS_SERVICE, UserDto } from '@app/common';
 
 import { UsersRepository } from 'apps/auth/src/users/users.repository';
 import { ReservationCreationException } from './exceptions/reservation-creation.exception';
+import { ErrorType } from '@app/common/enums';
 
 @Injectable()
 export class ReservationsService {
@@ -47,7 +48,7 @@ export class ReservationsService {
       );
     } catch (error) {
       throw new ReservationCreationException(
-        'Failed to create reservation',
+        ErrorType.RESERVATION_CREATION_ERROR,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
