@@ -15,7 +15,7 @@ services:
     env_file:
       - ../apps/reservations/.env
     ports:
-      - '3000:3000'
+      - '3245:3245'
   auth:
     image: us-east4-docker.pkg.dev/sleepr-378423/auth/production
     env_file:

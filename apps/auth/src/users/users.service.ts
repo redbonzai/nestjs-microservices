@@ -7,10 +7,15 @@ import { UserDocument } from '@app/common';
 import { CreatedUserValidationException } from './exceptions/created-user-validation.exception';
 import { ErrorType } from '@app/common/enums';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { getRoleIdsFromNames } from './helpers/helpers';
+import { RolesRepository } from '@app/common/roles/roles.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly rolesRepository: RolesRepository,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     if (await this.userExists(createUserDto)) {
@@ -23,9 +28,18 @@ export class UsersService {
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
+    // Convert role strings to ObjectId's
+    const roleIds = await getRoleIdsFromNames(
+      this.rolesRepository,
+      createUserDto.roles,
+    );
+    console.log('ROLE IDS: ', roleIds);
+
     return await this.usersRepository.create({
       ...createUserDto,
+      email: createUserDto.email.toLowerCase(),
       password: hashedPassword,
+      roles: roleIds,
     });
   }
 

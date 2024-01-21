@@ -23,7 +23,7 @@ spec:
             - name: NOTIFICATIONS_HOST
               value: notifications
             - name: NOTIFICATIONS_PORT
-              value: '3000'
+              value: '3245'
             - name: STRIPE_SECRET_KEY
               valueFrom:
                 secretKeyRef:

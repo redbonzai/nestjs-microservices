@@ -8,7 +8,7 @@ services:
       env_file:
         - ./apps/reservations/.env
       ports:
-       - '3000:3000'
+       - '3245:3245'
       volumes:
        - .:/usr/src/app
 
@@ -50,3 +50,17 @@ services:
       image: mongo
       ports:
        - '27017:27017'
+
+    permissions:
+      build:
+        context: .
+        dockerfile: ./apps/permissions/Dockerfile
+        target: development
+      command: pnpm run start:dev auth
+      env_file:
+        - ./apps/auth/.env
+      ports:
+        - '3246:3246'
+      volumes:
+        - .:/usr/src/app
+

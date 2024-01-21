@@ -11,6 +11,7 @@ import {
   AUTH_SERVICE,
   PAYMENTS_SERVICE,
   ResponseInterceptor,
+  PERMISSIONS_SERVICE,
 } from '@app/common';
 import { ReservationsRepository } from './reservations.repository';
 import {
@@ -36,6 +37,8 @@ import { UsersRepository } from 'apps/auth/src/users/users.repository';
         PAYMENTS_HOST: Joi.string().required(),
         AUTH_PORT: Joi.number().required(),
         PAYMENTS_PORT: Joi.number().required(),
+        PERMISSIONS_HOST: Joi.string().required(),
+        PERMISSIONS_PORT: Joi.number().required(),
       }),
     }),
     ClientsModule.registerAsync([
@@ -57,6 +60,17 @@ import { UsersRepository } from 'apps/auth/src/users/users.repository';
           options: {
             host: configService.get('PAYMENTS_HOST'),
             port: configService.get('PAYMENTS_PORT'),
+          },
+        }),
+        inject: [ConfigService],
+      },
+      {
+        name: PERMISSIONS_SERVICE,
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: configService.get('PERMISSIONS_HOST'),
+            port: configService.get('PERMISSIONS_PORT'),
           },
         }),
         inject: [ConfigService],
