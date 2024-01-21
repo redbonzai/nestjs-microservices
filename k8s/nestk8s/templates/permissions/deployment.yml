@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: permissions
+  name: permissions
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: permissions
+  template:
+    metadata:
+      labels:
+        app: permissions
+    spec:
+      containers:
+        - image: 901872349189.dkr.ecr.us-east-1.amazonaws.com/permissions:latest
+          name: permissions
+          env:
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb
+                  key: connectionString
+            - name: PORT
+              value: '3246'
+            - name: AUTH_HOST
+              value: auth-tcp
+            - name: AUTH_PORT
+              value: '3002'
+            - name: RESERVATIONS_PORT
+              value: '3004'
+            - name: RESERVATIONS_HOST
+              value: reservations
+          ports:
+            - containerPort: 3004

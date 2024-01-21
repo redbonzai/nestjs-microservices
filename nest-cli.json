@@ -52,6 +52,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/notifications/tsconfig.app.json"
       }
+    },
+    "permissions": {
+      "type": "application",
+      "root": "apps/permissions",
+      "entryFile": "main",
+      "sourceRoot": "apps/permissions/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/permissions/tsconfig.app.json"
+      }
     }
   },
   "monorepo": true,

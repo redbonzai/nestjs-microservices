@@ -18,5 +18,6 @@ import {
   ],
   controllers: [RolesController],
   providers: [RolesService, RolesRepository],
+  exports: [RolesService, RolesRepository],
 })
 export class RolesModule {}

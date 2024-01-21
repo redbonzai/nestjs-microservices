@@ -19,7 +19,7 @@ spec:
           name: notifications
           env:
             - name: PORT
-              value: '3000'
+              value: '3245'
             - name: GOOGLE_OAUTH_CLIENT_ID
               value: 474561109502-01jd9hpvg9th7bvt776q2j5jvvdae8ni.apps.googleusercontent.com
             - name: GOOGLE_OAUTH_CLIENT_SECRET
@@ -35,4 +35,4 @@ spec:
             - name: SMTP_USER
               value: sleeprnestapp@gmail.com
           ports:
-            - containerPort: 3000
+            - containerPort: 3245

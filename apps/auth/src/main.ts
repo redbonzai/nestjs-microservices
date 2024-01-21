@@ -21,7 +21,7 @@ async function bootstrap() {
   app.useLogger(app.get(Logger));
 
   await app.startAllMicroservices();
-  await app.listen(configService.get('HTTP_PORT'));
+  await app.listen(configService.get('PORT'));
 }
 
 bootstrap().then(() => console.log('Auth service is bootstrapped amd running'));

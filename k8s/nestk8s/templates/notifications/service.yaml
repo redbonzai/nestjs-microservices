@@ -7,9 +7,9 @@ metadata:
 spec:
   ports:
     - name: 'tcp'
-      port: 3000
+      port: 3245
       protocol: TCP
-      targetPort: 3000
+      targetPort: 3245
   selector:
     app: notifications
   type: ClusterIP
