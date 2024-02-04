@@ -3,10 +3,10 @@ import { AbstractRepository, UserDocument } from '@app/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Model } from 'mongoose';
-import { RoleDocument } from '@app/common/roles/models/role.schema';
+import { RoleDocument } from '@roles/models/role.schema';
 import { User } from './interfaces';
-import { Permission } from '@app/common/permissions/interfaces';
-import { Role } from '@app/common/roles/interfaces/role.interface';
+import { Permission } from '@permissions/interfaces';
+import { Role } from '@roles/interfaces/role.interface';
 
 @Injectable()
 export class UsersRepository extends AbstractRepository<UserDocument> {

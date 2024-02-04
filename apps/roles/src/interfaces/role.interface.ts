@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Permission } from '@app/common/permissions/interfaces';
+import { Permission } from '@permissions/interfaces';
 
 export interface Role extends mongoose.Document {
   name: string;

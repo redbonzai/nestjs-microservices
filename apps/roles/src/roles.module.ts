@@ -1,24 +1,24 @@
 import { Module } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import * as Joi from 'joi';
-import { PermissionsController } from './permissions.controller';
-import { PermissionsService } from './permissions.service';
-import {
-  AUTH_SERVICE,
-  ROLES,
-  DatabaseModule,
-  LoggerModule,
-  ResponseInterceptor,
-} from '@app/common';
-
-import { PermissionsRepository } from './permissions.repository';
+import { RolesService } from './roles.service';
+import { RolesController } from './roles.controller';
+import { RolesRepository } from './roles.repository';
 import { RoleDocument, RoleSchema } from '@roles/models/role.schema';
 import {
   PermissionDocument,
   PermissionSchema,
-} from './models/permission.schema';
+} from '@permissions/models/permission.schema';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import {
+  AUTH_SERVICE,
+  PERMISSIONS,
+  DatabaseModule,
+  LoggerModule,
+  ResponseInterceptor,
+} from '@app/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import * as Joi from 'joi';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { PermissionsRepository } from '@permissions/permissions.repository';
 
 @Module({
   imports: [
@@ -36,8 +36,8 @@ import {
         TCP_PORT: Joi.number().required(),
         AUTH_HOST: Joi.string().required(),
         AUTH_PORT: Joi.number().required(),
-        ROLES_HOST: Joi.string().required(),
-        ROLES_PORT: Joi.number().required(),
+        PERMISSIONS_HOST: Joi.string().required(),
+        PERMISSIONS_PORT: Joi.number().required(),
       }),
     }),
     ClientsModule.registerAsync([
@@ -53,26 +53,28 @@ import {
         inject: [ConfigService],
       },
       {
-        name: ROLES,
+        name: PERMISSIONS,
         useFactory: (configService: ConfigService) => ({
           transport: Transport.TCP,
           options: {
-            host: configService.get('ROLES_HOST'),
-            port: configService.get('ROLES_PORT'),
+            host: configService.get('PERMISSIONS_HOST'),
+            port: configService.get('PERMISSIONS_PORT'),
           },
         }),
         inject: [ConfigService],
       },
     ]),
   ],
-  controllers: [PermissionsController],
+  controllers: [RolesController],
   providers: [
     {
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,
     },
-    PermissionsService,
+    RolesService,
+    RolesRepository,
     PermissionsRepository,
   ],
+  exports: [RolesService, RolesRepository],
 })
-export class PermissionsModule {}
+export class RolesModule {}

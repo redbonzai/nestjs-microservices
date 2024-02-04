@@ -61,6 +61,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/permissions/tsconfig.app.json"
       }
+    },
+    "roles": {
+      "type": "application",
+      "root": "apps/roles",
+      "entryFile": "main",
+      "sourceRoot": "apps/roles/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/roles/tsconfig.app.json"
+      }
     }
   },
   "monorepo": true,

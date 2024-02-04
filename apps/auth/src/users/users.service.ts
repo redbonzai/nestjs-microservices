@@ -1,4 +1,9 @@
-import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersRepository } from './users.repository';
@@ -7,8 +12,8 @@ import { UserDocument } from '@app/common';
 import { CreatedUserValidationException } from './exceptions/created-user-validation.exception';
 import { ErrorType } from '@app/common/enums';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { getRoleIdsFromNames } from './helpers/helpers';
-import { RolesRepository } from '@app/common/roles/roles.repository';
+import { getRoleIdsFromRoleNames } from './helpers/helpers';
+import { RolesRepository } from '@roles/roles.repository';
 
 @Injectable()
 export class UsersService {
@@ -26,10 +31,26 @@ export class UsersService {
       );
     }
 
+    if (createUserDto.roles.length === 0) {
+      throw new CreatedUserValidationException(
+        'User must have at least one role',
+        ErrorType.USER_MUST_HAVE_AT_LEAST_ONE_ROLE,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // if (createUserDto.password !== createUserDto.confirmPassword) {
+    //   throw new CreatedUserValidationException(
+    //     'Passwords do not match',
+    //     ErrorType.PASSWORDS_DO_NOT_MATCH,
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
+
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
     // Convert role strings to ObjectId's
-    const roleIds = await getRoleIdsFromNames(
+    const roleIds = await getRoleIdsFromRoleNames(
       this.rolesRepository,
       createUserDto.roles,
     );
@@ -77,6 +98,10 @@ export class UsersService {
 
   async verifyUser(email: string, password: string) {
     const user = await this.usersRepository.findOne({ email });
+    if (!user) {
+      throw new NotFoundException(`User with email ${email} not found`);
+    }
+
     const passwordIsValid = await bcrypt.compare(password, user.password);
     if (!passwordIsValid) {
       throw new UnauthorizedException('Credentials are not valid');

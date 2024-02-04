@@ -8,14 +8,14 @@ import {
   Delete,
 } from '@nestjs/common';
 import { RolesService } from './roles.service';
-import { CreateRoleDto } from './dto/create-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
+import { CreateRoleDto, UpdateRoleDto } from '@roles/dto';
+import { Role } from '@roles/interfaces';
 
 @Controller('roles')
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createRoleDto: CreateRoleDto) {
     return this.rolesService.create(createRoleDto);
   }
@@ -38,5 +38,9 @@ export class RolesController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.rolesService.remove(id);
+  }
+
+  async upsertRoles(@Body() roleData: CreateRoleDto[]): Promise<Role[]> {
+    return this.rolesService.firstOrCreateRoles(roleData);
   }
 }

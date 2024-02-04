@@ -5,8 +5,9 @@ import * as Joi from 'joi';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import {
   LoggerModule,
-  PERMISSIONS_SERVICE,
   ResponseInterceptor,
+  PERMISSIONS,
+  ROLES,
 } from '@app/common';
 import { UsersModule } from './users/users.module';
 import { AuthController } from './auth.controller';
@@ -29,6 +30,8 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         TCP_PORT: Joi.number().required(),
         PERMISSIONS_HOST: Joi.string().required(),
         PERMISSIONS_PORT: Joi.number().required(),
+        ROLES_HOST: Joi.string().required(),
+        ROLES_PORT: Joi.number().required(),
       }),
     }),
     JwtModule.registerAsync({
@@ -42,12 +45,23 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     }),
     ClientsModule.registerAsync([
       {
-        name: PERMISSIONS_SERVICE,
+        name: PERMISSIONS,
         useFactory: (configService: ConfigService) => ({
           transport: Transport.TCP,
           options: {
             host: configService.get('PERMISSIONS_HOST'),
             port: configService.get('PERMISSIONS_PORT'),
+          },
+        }),
+        inject: [ConfigService],
+      },
+      {
+        name: ROLES,
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: configService.get('ROLES_HOST'),
+            port: configService.get('ROLES_HOST'),
           },
         }),
         inject: [ConfigService],

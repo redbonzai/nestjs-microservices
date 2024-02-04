@@ -5,14 +5,14 @@ import { UsersService } from './users.service';
 import { UserDocument, UserSchema } from '@app/common';
 import { UsersRepository } from './users.repository';
 import { MongooseModule } from '@nestjs/mongoose';
-import { RolesModule } from '@app/common/roles/roles.module';
-import { RoleDocument, RoleSchema } from '@app/common/roles/models/role.schema';
-import { RolesRepository } from '@app/common/roles/roles.repository';
+import { RolesModule } from '@roles/roles.module';
+import { RoleDocument, RoleSchema } from '@roles/models/role.schema';
+import { RolesRepository } from '@roles/roles.repository';
 import {
   PermissionDocument,
   PermissionSchema,
-} from '@app/common/permissions/models/guards/permission.schema';
-import { PermissionsRepository } from '@app/common/permissions/permissions.repository';
+} from '@permissions/models/permission.schema';
+import { PermissionsRepository } from '@permissions/permissions.repository';
 
 @Module({
   imports: [

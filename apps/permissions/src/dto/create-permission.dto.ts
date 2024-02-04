@@ -5,5 +5,5 @@ export class CreatePermissionDto {
   name: string;
 
   @Prop()
-  description: string;
+  description?: string;
 }

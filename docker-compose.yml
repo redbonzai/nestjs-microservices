@@ -8,7 +8,7 @@ services:
       env_file:
         - ./apps/reservations/.env
       ports:
-       - '3245:3245'
+       - '3000:3000'
       volumes:
        - .:/usr/src/app
 
@@ -46,21 +46,34 @@ services:
         - ./apps/notifications/.env
       volumes:
         - .:/usr/src/app
-    mongo:
-      image: mongo
-      ports:
-       - '27017:27017'
 
     permissions:
       build:
         context: .
-        dockerfile: ./apps/permissions/Dockerfile
+        dockerfile: apps/permissions/Dockerfile
         target: development
-      command: pnpm run start:dev auth
+      command: pnpm run start:dev permissions
       env_file:
-        - ./apps/auth/.env
+        - apps/permissions/.env
       ports:
-        - '3246:3246'
+        - '3005:3005'
       volumes:
         - .:/usr/src/app
 
+    roles:
+      build:
+        context: .
+        dockerfile: apps/roles/Dockerfile
+        target: development
+      command: pnpm run start:dev roles
+      env_file:
+        - apps/roles/.env
+      ports:
+        - '3007:3007'
+      volumes:
+        - .:/usr/src/app
+
+    mongo:
+      image: mongo
+      ports:
+       - '27017:27017'

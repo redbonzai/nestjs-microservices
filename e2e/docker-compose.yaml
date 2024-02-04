@@ -9,13 +9,14 @@ services:
       - auth
       - payments
       - notifications
+      - permissions
       - mongo
   reservations:
     image: us-east4-docker.pkg.dev/sleepr-378423/reservations/production
     env_file:
       - ../apps/reservations/.env
     ports:
-      - '3245:3245'
+      - '3000:3000'
   auth:
     image: us-east4-docker.pkg.dev/sleepr-378423/auth/production
     env_file:
@@ -34,5 +35,18 @@ services:
       - '3004:3004'
     env_file:
       - ../apps/notifications/.env
+  permissions:
+    build:
+      context: .
+      dockerfile: ./apps/permissions/Dockerfile
+      target: development
+    command: pnpm run start:dev auth
+    env_file:
+      - ./apps/auth/.env
+    ports:
+      - '3005:3005'
+    volumes:
+      - .:/usr/src/app
+
   mongo:
     image: mongo
