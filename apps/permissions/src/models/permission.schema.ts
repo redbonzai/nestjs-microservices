@@ -7,7 +7,7 @@ export class PermissionDocument extends AbstractDocument {
   name: string;
 
   @Prop()
-  description: string;
+  description?: string;
 }
 
 export const PermissionSchema =

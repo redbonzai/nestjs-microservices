@@ -34,24 +34,24 @@ import { PermissionsRepository } from '@permissions/permissions.repository';
         MONGODB_URI: Joi.string().required(),
         PORT: Joi.number().required(),
         TCP_PORT: Joi.number().required(),
-        AUTH_HOST: Joi.string().required(),
-        AUTH_PORT: Joi.number().required(),
+        // AUTH_HOST: Joi.string().required(),
+        // AUTH_PORT: Joi.number().required(),
         PERMISSIONS_HOST: Joi.string().required(),
         PERMISSIONS_PORT: Joi.number().required(),
       }),
     }),
     ClientsModule.registerAsync([
-      {
-        name: AUTH_SERVICE,
-        useFactory: (configService: ConfigService) => ({
-          transport: Transport.TCP,
-          options: {
-            host: configService.get('AUTH_HOST'),
-            port: configService.get('AUTH_PORT'),
-          },
-        }),
-        inject: [ConfigService],
-      },
+      // {
+      //   name: AUTH_SERVICE,
+      //   useFactory: (configService: ConfigService) => ({
+      //     transport: Transport.TCP,
+      //     options: {
+      //       host: configService.get('AUTH_HOST'),
+      //       port: configService.get('AUTH_PORT'),
+      //     },
+      //   }),
+      //   inject: [ConfigService],
+      // },
       {
         name: PERMISSIONS,
         useFactory: (configService: ConfigService) => ({

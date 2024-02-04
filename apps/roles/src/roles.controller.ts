@@ -15,9 +15,10 @@ import { Role } from '@roles/interfaces';
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
-  @Post('create')
-  create(@Body() createRoleDto: CreateRoleDto) {
-    return this.rolesService.create(createRoleDto);
+  @Post()
+  async create(@Body() createRoleDto: CreateRoleDto) {
+    console.log('INCOMING ROLE CREATE REQUEST', createRoleDto);
+    return await this.rolesService.create(createRoleDto);
   }
 
   @Get()

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { AbstractDocument, AbstractRepository } from '@app/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { RoleDocument } from './models/role.schema';
 import { PermissionDocument } from '@permissions/models/permission.schema';
 import { Role } from '@roles/interfaces';
@@ -23,13 +23,14 @@ export class RolesRepository extends AbstractRepository<AbstractDocument> {
     this.permissionModel = permissionModel;
   }
 
-  async findByIdAndPopulatePermissions(
-    roleId: string,
-  ): Promise<RoleDocument | null> {
-    return this.roleModel.findById(roleId).populate({
-      path: 'permissions',
-      select: 'name -_id', // Selects only the 'name' field and excludes the '_id' field
-    });
+  async findByIdAndPopulatePermissions(roleId: Types.ObjectId): Promise<RoleDocument | null> {
+    const role = await this.roleModel.findById(roleId)
+      .populate({
+        path: 'permissions',
+        select: 'name -_id'
+      });
+    console.log('Role:', role);
+    return role;
     // .exec(); // You can omit .exec() if using async/await
   }
 

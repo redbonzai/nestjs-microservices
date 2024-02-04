@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateRoleDto, UpdateRoleDto } from '@roles/dto';
+import { CreateRoleDto, GetRoleDto, UpdateRoleDto } from '@roles/dto';
 import { RolesRepository } from './roles.repository';
 import { AbstractDocument } from '@app/common';
 import { PermissionsRepository } from '@permissions/permissions.repository';
@@ -14,14 +14,14 @@ export class RolesService {
     private readonly permissionRepository: PermissionsRepository,
   ) {}
 
-  async create(createRoleDto: CreateRoleDto): Promise<AbstractDocument> {
+  async create(createRoleDto: CreateRoleDto): Promise<RoleDocument> {
     let permissionIds = [];
 
     // If there are permissions specified, find or create them
     if (createRoleDto.permissions && createRoleDto.permissions.length > 0) {
       const permissions: Permission[] =
         await this.permissionRepository.firstOrCreatePermissions(
-          createRoleDto.permissions.map((name) => ({ name })),
+          createRoleDto.permissions.map((name: string) => ({ name })),
         );
 
       permissionIds = permissions.map(
@@ -30,10 +30,12 @@ export class RolesService {
     }
 
     // Create the role with or without permissions
-    const role: Promise<AbstractDocument> = this.roleRepository.create({
+    const role: AbstractDocument = await this.roleRepository.create({
       ...createRoleDto,
       permissions: permissionIds, // This can be an empty array if no permissions were provided
     });
+
+    console.log('RECENTLY CREATED ROLE : ', role);
 
     return await this.roleRepository.findByIdAndPopulatePermissions(role._id);
   }

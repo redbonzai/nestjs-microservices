@@ -1,9 +1,11 @@
 import { Prop } from '@nestjs/mongoose';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreatePermissionDto {
-  @Prop({ required: true })
+  @IsString()
   name: string;
 
-  @Prop()
+  @IsOptional()
+  @IsString()
   description?: string;
 }

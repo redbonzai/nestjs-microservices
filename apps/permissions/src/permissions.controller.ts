@@ -21,11 +21,10 @@ export class PermissionsController {
     @Inject(Logger) private readonly logger: Logger,
   ) {}
 
-  @Post('create')
-  create(
-    @Body() CreatePermissionDto: CreatePermissionDto,
-  ): Promise<AbstractDocument> {
-    return this.permissionsService.create(CreatePermissionDto);
+  @Post('/')
+  async create(@Body() permissionDto: CreatePermissionDto): Promise<AbstractDocument> {
+    console.log('INCOMING PERMISSION CREATE REQUEST', permissionDto);
+    return await this.permissionsService.create(permissionDto);
   }
 
   @Get()
