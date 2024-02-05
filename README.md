@@ -33,23 +33,23 @@ $ pnpm install
 ```
 
 ## Running the app
-
-```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
-```
+>make sure that you have docker installed in order to spin op all the services. 
+Each service should have it's .env.sample file that you need to convert into .env files.  Add the ports that you want each service to have. 
+Note: 
+auth, roles, permissions each have tcp ports for internal communication, since roles, and permissions supply proper authorizatino, and auth supplies authentication.
+--
 
 ## ENV FILES
 Every service has it's own .env.example file that contains the env keys that are needed in the current version. Run the following command on all the ENVs to turn them into .env files
 ```bash
 mv .env.example .env
 ```
+
+```bash
+docker compose up
+```
+--
+By watchinng the logs in attached mode, you can see if there are any exceptions along the way.
 
 ## Setting Up MongoDB For Local Development (MAC OS & Linux)
 >See this DOC FILE for more info FIRST: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/
