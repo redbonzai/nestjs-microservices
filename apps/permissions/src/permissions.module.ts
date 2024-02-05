@@ -19,6 +19,7 @@ import {
   PermissionDocument,
   PermissionSchema,
 } from './models/permission.schema';
+import { RolesRepository } from '@roles/roles.repository';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import {
     },
     PermissionsService,
     PermissionsRepository,
+    RolesRepository
   ],
 })
 export class PermissionsModule {}

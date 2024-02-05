@@ -2,23 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { CreatePermissionDto, UpdatePermissionDto } from './dto';
 import { AbstractDocument } from '@app/common';
 import { PermissionsRepository } from './permissions.repository';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { RoleDocument } from '@roles/models';
 import { Permission } from '@permissions/interfaces';
+// import { AddPermissionsDto } from '@permissions/dto/add-permissions.dto';
+import { RolesRepository } from '@roles/roles.repository';
+import { AddPermissionsDto } from '@permissions/dto/add-permissions.dto';
 
 @Injectable()
 export class PermissionsService {
-  constructor(private readonly permissionRepository: PermissionsRepository) {}
+  constructor(
+    private readonly permissionRepository: PermissionsRepository,
+    private readonly rolesRepository: RolesRepository,
+  ) {}
   create(createPermissionDto: CreatePermissionDto): Promise<AbstractDocument> {
     return this.permissionRepository.create(createPermissionDto);
-  }
-
-  findAll(): Promise<AbstractDocument[]> {
-    return this.permissionRepository.find({});
-  }
-
-  findOne(_id: string): Promise<AbstractDocument> {
-    return this.permissionRepository.findOne({ _id });
   }
 
   async upsertPermissions(permissionNames: string[]): Promise<void> {
@@ -34,6 +32,14 @@ export class PermissionsService {
     );
   }
 
+  findAll(): Promise<AbstractDocument[]> {
+    return this.permissionRepository.find({});
+  }
+
+  findOne(_id: string): Promise<AbstractDocument> {
+    return this.permissionRepository.findOne({ _id });
+  }
+
   async remove(id: string): Promise<AbstractDocument> {
     return await this.permissionRepository.findOneAndDelete({ _id: id });
   }
@@ -45,19 +51,26 @@ export class PermissionsService {
       permissionName,
     );
   }
-
-  async addPermissionToRole(
-    roleId: string,
-    permissionId: string,
+  async addPermissionsToRole(
+    roleId: Types.ObjectId,
+    addPermissionsDto: AddPermissionsDto,
   ): Promise<RoleDocument> {
-    return await this.permissionRepository.addPermissionToRole(
+    // Extract structured permissions data from DTO
+    const permissionsData = addPermissionsDto.permissions;
+
+    // Process permissions: find existing or create new
+    const permissionsDocs =
+      await this.permissionRepository.firstOrCreate(permissionsData);
+
+    // Update role with permissions' ObjectIds
+    return this.permissionRepository.addPermissionsToRole(
       roleId,
-      permissionId,
+      permissionsDocs.map((permission) => permission._id),
     );
   }
 
   async syncPermissions(
-    roleId: string,
+    roleId: Types.ObjectId,
     permissionNames: string[],
   ): Promise<RoleDocument> {
     return await this.permissionRepository.syncPermissions(
@@ -69,8 +82,6 @@ export class PermissionsService {
   async firstOrCreatePermissions(
     permissionData: CreatePermissionDto[],
   ): Promise<Permission[]> {
-    return await this.permissionRepository.firstOrCreatePermissions(
-      permissionData,
-    );
+    return await this.permissionRepository.firstOrCreate(permissionData);
   }
 }

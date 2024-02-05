@@ -12,7 +12,9 @@ import { Logger } from 'nestjs-pino';
 import { PermissionsService } from './permissions.service';
 import { CreatePermissionDto } from './dto';
 import { UpdatePermissionDto } from './dto';
+import { Types } from 'mongoose';
 import { AbstractDocument } from '@app/common';
+import { AddPermissionsDto } from '@permissions/dto/add-permissions.dto';
 
 @Controller('permissions')
 export class PermissionsController {
@@ -58,5 +60,16 @@ export class PermissionsController {
       this.logger.error('PermissionUpsertException', error);
       throw new Error('Error upserting permissions');
     }
+  }
+
+  @Patch(':roleId/permissions')
+  async addPermissionsToRole(
+    @Param('roleId') roleId: Types.ObjectId,
+    @Body() addPermissionDto: AddPermissionsDto,
+  ): Promise<AbstractDocument> {
+    return await this.permissionsService.addPermissionsToRole(
+      roleId,
+      addPermissionDto,
+    );
   }
 }

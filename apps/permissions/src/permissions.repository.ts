@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AbstractDocument, AbstractRepository } from '@app/common';
 import { PermissionDocument } from './models/permission.schema';
-import mongoose, { Model } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import { RoleDocument } from '@roles/models/role.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Permission } from '@permissions/interfaces';
@@ -43,22 +43,6 @@ export class PermissionsRepository extends AbstractRepository<AbstractDocument> 
     );
   }
 
-  async findOrCreatePermission(
-    permissionName: string,
-  ): Promise<mongoose.Types.ObjectId> {
-    let permissionId: mongoose.Types.ObjectId =
-      await this.getPermissionIdByName(permissionName);
-
-    if (!permissionId) {
-      const permission: mongoose.Document = await this.permissionModel.create({
-        name: permissionName,
-      });
-      permissionId = permission._id;
-    }
-
-    return permissionId;
-  }
-
   async upsertPermissions(names: string[]): Promise<void> {
     // Iterate over each name and upsert the permission.
     for (const name of names) {
@@ -73,38 +57,61 @@ export class PermissionsRepository extends AbstractRepository<AbstractDocument> 
     }
   }
 
-  async addPermissionToRole(
-    roleId: string,
-    permissionId: string,
+  async firstOrCreate(
+    permissionsData: Array<{ name: string; description?: string }>,
+  ): Promise<Permission[]> {
+    return Promise.all(
+      permissionsData.map(async (permissionData) => {
+        const { name, description } = permissionData;
+        return this.permissionModel.findOneAndUpdate(
+          { name },
+          { $setOnInsert: { name, description } },
+          { new: true, upsert: true },
+        );
+      }),
+    );
+  }
+
+  async addPermissionsToRole(
+    roleId: Types.ObjectId,
+    permissionIds: Types.ObjectId[],
   ): Promise<RoleDocument> {
     const role = await this.roleModel.findById(roleId);
     if (!role) {
       throw new NotFoundException(`Role with ID ${roleId} not found`);
     }
 
-    const permission: Permission =
-      await this.permissionModel.findById(permissionId);
-    console.log('PERMISSION: ', permission);
+    const permissions: PermissionDocument[] =
+      // await this.permissionModel.findById(permissionIds);    const permission: Permission =
+      await this.permissionModel.find({ _id: { $in: permissionIds } });
+    console.log('PERMISSION: ', permissions);
 
-    if (!permission) {
+    if (!permissions.length) {
       throw new NotFoundException(
-        `Permission with ID ${permissionId} not found`,
+        `Permissions not found`,
       );
     }
 
-    // Convert ObjectId to string for comparison
-    const permissionIdStr = permission._id.toString();
+    // Filter out permissions that are already part of the role
+    const newPermissions = permissions.filter(
+      (permission) =>
+        !role.permissions.some((rolePermId) => rolePermId.equals(permission._id),
+        ),
+    );
 
-    // Check if permission already exists in the role
-    if (!role.permissions.some((pid) => pid.toString() === permissionIdStr)) {
-      role.permissions.push(permission._id); // Push the ObjectId
-      return role.save();
+    if (newPermissions.length) {
+      // Add new permissions to the role
+      role.permissions.push(
+        ...newPermissions.map((permission) => permission._id),
+      );
+      await role.save();
+      return role;
     }
     throw new BadRequestException(`Permission already assigned to role`);
   }
 
   async syncPermissions(
-    roleId: string,
+    roleId: Types.ObjectId,
     permissionNames: string[],
   ): Promise<RoleDocument> {
     const role: RoleDocument = await this.roleModel.findById(roleId);
@@ -122,20 +129,5 @@ export class PermissionsRepository extends AbstractRepository<AbstractDocument> 
       (permission: Permission) => permission._id,
     );
     return role;
-  }
-
-  async firstOrCreatePermissions(
-    permissionsData: Array<{ name: string; description?: string }>,
-  ): Promise<Permission[]> {
-    return Promise.all(
-      permissionsData.map(async (permissionData) => {
-        const { name, description } = permissionData;
-        return this.permissionModel.findOneAndUpdate(
-          { name },
-          { $setOnInsert: { name, description } },
-          { new: true, upsert: true },
-        );
-      }),
-    );
   }
 }

@@ -17,7 +17,6 @@ export class RolesController {
 
   @Post()
   async create(@Body() createRoleDto: CreateRoleDto) {
-    console.log('INCOMING ROLE CREATE REQUEST', createRoleDto);
     return await this.rolesService.create(createRoleDto);
   }
 
@@ -41,6 +40,7 @@ export class RolesController {
     return this.rolesService.remove(id);
   }
 
+  @Post('batch')
   async upsertRoles(@Body() roleData: CreateRoleDto[]): Promise<Role[]> {
     return this.rolesService.firstOrCreateRoles(roleData);
   }

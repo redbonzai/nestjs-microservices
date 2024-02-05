@@ -20,7 +20,7 @@ export class RolesService {
     // If there are permissions specified, find or create them
     if (createRoleDto.permissions && createRoleDto.permissions.length > 0) {
       const permissions: Permission[] =
-        await this.permissionRepository.firstOrCreatePermissions(
+        await this.permissionRepository.firstOrCreate(
           createRoleDto.permissions.map((name: string) => ({ name })),
         );
 
@@ -62,6 +62,4 @@ export class RolesService {
   async firstOrCreateRoles(roleData: CreateRoleDto[]): Promise<Role[]> {
     return this.roleRepository.firstOrCreateRoles(roleData);
   }
-
-
 }
