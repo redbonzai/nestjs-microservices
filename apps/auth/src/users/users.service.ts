@@ -31,7 +31,7 @@ export class UsersService {
       );
     }
 
-    if (createUserDto.roles.length === 0) {
+    if (!createUserDto.hasOwnProperty('roles')) {
       throw new CreatedUserValidationException(
         'User must have at least one role',
         ErrorType.USER_MUST_HAVE_AT_LEAST_ONE_ROLE,

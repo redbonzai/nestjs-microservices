@@ -24,7 +24,7 @@ export class ReservationsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async create(
     @Body() createReservationDto: CreateReservationDto,
     @CurrentUser() user: UserDto,
@@ -35,7 +35,7 @@ export class ReservationsController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async findAll() {
     return await this.reservationsService.findAll();
   }

@@ -26,7 +26,7 @@ describe('Reservations', () => {
   test('Create & Get', async () => {
     const createdReservation = await createReservation();
     const responseGet = await fetch(
-      `http://reservations:3000/reservations/${createdReservation._id}`,
+      `http://reservations:3200/reservations/${createdReservation._id}`,
       {
         headers: {
           Authentication: jwt,
@@ -39,7 +39,7 @@ describe('Reservations', () => {
 
   const createReservation = async () => {
     const responseCreate = await fetch(
-      'http://reservations:3000/reservations',
+      'http://reservations:3200/reservations',
       {
         method: 'POST',
         headers: {

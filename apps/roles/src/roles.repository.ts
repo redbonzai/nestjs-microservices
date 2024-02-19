@@ -23,15 +23,15 @@ export class RolesRepository extends AbstractRepository<AbstractDocument> {
     this.permissionModel = permissionModel;
   }
 
-  async findByIdAndPopulatePermissions(roleId: Types.ObjectId): Promise<RoleDocument | null> {
-    const role = await this.roleModel.findById(roleId)
-      .populate({
-        path: 'permissions',
-        select: 'name -_id'
-      });
+  async findByIdAndPopulatePermissions(
+    roleId: Types.ObjectId,
+  ): Promise<RoleDocument | null> {
+    const role = await this.roleModel.findById(roleId).populate({
+      path: 'permissions',
+      select: 'name -_id',
+    });
     console.log('Role:', role);
     return role;
-    // .exec(); // You can omit .exec() if using async/await
   }
 
   async firstOrCreateRoles(
