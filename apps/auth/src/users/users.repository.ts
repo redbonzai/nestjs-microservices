@@ -2,17 +2,21 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AbstractRepository, UserDocument } from '@app/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { RoleDocument } from '@roles/models/role.schema';
 import { User } from './interfaces';
 import { Permission } from '@permissions/interfaces';
 import { Role } from '@roles/interfaces/role.interface';
+import { RolesRepository } from '@roles/roles.repository';
+import { PermissionsRepository } from '@permissions/permissions.repository';
 
 @Injectable()
 export class UsersRepository extends AbstractRepository<UserDocument> {
   protected readonly logger = new Logger(UsersRepository.name);
   private readonly userModel: Model<UserDocument>;
   private readonly roleModel: Model<RoleDocument>;
+  private rolesRepository: RolesRepository;
+  private permissionsRepo: PermissionsRepository;
 
   constructor(
     @InjectModel(UserDocument.name) userModel: Model<UserDocument>,
@@ -44,6 +48,16 @@ export class UsersRepository extends AbstractRepository<UserDocument> {
     } else {
       console.log('Reservation successfully added to user');
     }
+  }
+
+  async getUserRoles(userId: string): Promise<Role[]> {
+    const user: User = await this.userModel.findById(userId).populate({
+      path: 'roles',
+    });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+    return user.roles.map((role: Role) => role);
   }
 
   async getUserPermissions(userId: string): Promise<string[]> {
@@ -90,5 +104,61 @@ export class UsersRepository extends AbstractRepository<UserDocument> {
         role.permissions.map((permission: Permission) => permission.name),
       ),
     };
+  }
+
+  async syncUserRoles(
+    userId: Types.ObjectId,
+    roleNames: string[],
+  ): Promise<UserDocument> {
+    const user = await this.userModel.findById(userId);
+    this.ensureExists(user, `User with ID ${userId} not found`);
+
+    const roles = await this.rolesRepository.firstOrCreateRoles(roleNames);
+    this.ensureRolesFound(roles, roleNames);
+
+    user.roles = roles.map((role: Role) => role._id);
+    await user.save();
+
+    return this.fetchUpdatedUser(userId);
+  }
+
+  async syncPermissionsOnRoleId(
+    userId: Types.ObjectId,
+    roleId: Types.ObjectId,
+    permissions: string[],
+  ): Promise<UserDocument> {
+    const role = await this.roleModel.findById(roleId);
+    this.ensureExists(role, `Role with ID ${roleId} not found`);
+
+    role.permissions =
+      await this.permissionsRepo.permissionIdsByPermissionNames(permissions);
+    await role.save();
+
+    return this.fetchUpdatedUser(userId, true);
+  }
+
+  private ensureExists(document: any, errorMessage: string): void {
+    if (!document) {
+      throw new NotFoundException(errorMessage);
+    }
+  }
+
+  private ensureRolesFound(roles: Role[], roleNames: string[]): void {
+    if (roles.length !== roleNames.length) {
+      throw new NotFoundException('One or more roles not found');
+    }
+  }
+
+  private async fetchUpdatedUser(
+    userId: Types.ObjectId,
+    populatePermissions: boolean = false,
+  ): Promise<UserDocument> {
+    let query = this.userModel.findById(userId).populate('roles');
+    if (populatePermissions) {
+      query = query.populate({ path: 'roles', populate: 'permissions' });
+    }
+    const updatedUser = await query;
+    this.ensureExists(updatedUser, `User with ID ${userId} not found`);
+    return updatedUser;
   }
 }

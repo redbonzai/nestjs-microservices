@@ -1,8 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AbstractDocument, AbstractRepository } from '@app/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { RoleDocument } from './models/role.schema';
+import mongoose, { Model, Types } from 'mongoose';
+import { RoleDocument } from '@roles/models';
 import { PermissionDocument } from '@permissions/models/permission.schema';
 import { Role } from '@roles/interfaces';
 
@@ -23,6 +23,21 @@ export class RolesRepository extends AbstractRepository<AbstractDocument> {
     this.permissionModel = permissionModel;
   }
 
+  async getRoleIdsFromRoleNames(
+    rolesRepository: RolesRepository,
+    roleNames: string[],
+  ): Promise<mongoose.Types.ObjectId[]> {
+    const roles = await rolesRepository.find({
+      name: { $in: roleNames },
+    });
+
+    if (roles.length !== roleNames.length) {
+      throw new NotFoundException('One or more roles not found');
+    }
+
+    return roles.map((role: RoleDocument) => role._id);
+  }
+
   async findByIdAndPopulatePermissions(
     roleId: Types.ObjectId,
   ): Promise<RoleDocument | null> {
@@ -34,15 +49,12 @@ export class RolesRepository extends AbstractRepository<AbstractDocument> {
     return role;
   }
 
-  async firstOrCreateRoles(
-    rolesData: Array<{ name: string; description?: string }>,
-  ): Promise<Role[]> {
+  async firstOrCreateRoles(roleNames: string[]): Promise<Role[]> {
     return Promise.all(
-      rolesData.map(async (roleData) => {
-        const { name, description } = roleData;
+      roleNames.map(async (name) => {
         return this.roleModel.findOneAndUpdate(
           { name },
-          { $setOnInsert: { name, description } },
+          { $setOnInsert: { name } },
           { new: true, upsert: true },
         );
       }),

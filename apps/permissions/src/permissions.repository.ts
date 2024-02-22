@@ -32,15 +32,17 @@ export class PermissionsRepository extends AbstractRepository<AbstractDocument> 
     return permission ? permission._id : null;
   }
 
-  async getPermissionIDsByNames(
+  async permissionIdsByPermissionNames(
     permissionNames: string[],
   ): Promise<mongoose.Types.ObjectId[]> {
-    const permissionIds: mongoose.Types.ObjectId[] = await Promise.all(
-      permissionNames.map(async (name) => this.getPermissionIdByName(name)),
-    );
-    return permissionIds.filter(
-      (id): id is mongoose.Types.ObjectId => id !== null,
-    );
+    // Prepare permissions data with names
+    const permissionsData = permissionNames.map(name => ({ name }));
+
+    // Use firstOrCreatePermission to ensure all permissions exist
+    const permissions = await this.firstOrCreate(permissionsData);
+
+    // Extract and return permission IDs
+    return permissions.map((permission) => permission._id);
   }
 
   async upsertPermissions(names: string[]): Promise<void> {

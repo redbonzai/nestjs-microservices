@@ -13,6 +13,9 @@ import { JwtAuthGuard } from 'apps/auth/src/guards/jwt-auth.guard';
 import { UserDocument } from '@app/common';
 import { UsersService } from './users.service';
 import { GetUserDto } from './dto/get-user.dto';
+import { validateCreateUser } from '@auth/users/helpers/helpers';
+import { UpdateUserDto } from '@auth/users/dto/update-user.dto';
+import { Types } from 'mongoose';
 
 @Controller('users')
 export class UsersController {
@@ -21,6 +24,7 @@ export class UsersController {
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
     console.log('REQUEST BODY FOR CREATED RESERVATION : ', createUserDto);
+    await validateCreateUser(createUserDto);
     return this.usersService.create(createUserDto);
   }
 
@@ -50,12 +54,31 @@ export class UsersController {
 
   @Patch(':id')
   async update(
-    @Param('id') id: string,
-    @Body() user: CreateUserDto,
+    @Param('id') id: Types.ObjectId,
+    @Body() user: UpdateUserDto,
   ): Promise<UserDocument> {
     return this.usersService.update(
       await identifierToDTO(GetUserDto, id, '_id'),
       user,
     );
+  }
+
+  @Patch(':id/roles')
+  async updateUserRoles(
+    @Param('id') id: string,
+    @Body() userId: Types.ObjectId,
+    roleNames: string[],
+  ): Promise<UserDocument> {
+    return this.usersService.updateUserRoles(userId, roleNames);
+  }
+
+  @Patch(':id/permissions')
+  async updateUserPermissions(
+    @Param('id') id: string,
+    @Body() userId: Types.ObjectId,
+    roleId: Types.ObjectId,
+    permissions: string[],
+  ): Promise<UserDocument> {
+    return this.usersService.updateUserPermissions(userId, roleId, permissions);
   }
 }

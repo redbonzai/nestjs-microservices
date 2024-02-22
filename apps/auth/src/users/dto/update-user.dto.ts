@@ -8,6 +8,10 @@ import {
 } from 'class-validator';
 
 export class UpdateUserDto {
+  @IsString()
+  @IsNotEmpty()
+  _id: string;
+
   @IsOptional()
   @IsEmail()
   email?: string;

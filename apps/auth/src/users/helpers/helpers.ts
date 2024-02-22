@@ -1,20 +1,22 @@
-// Helper method to fetch role ObjectId's from role names
-import mongoose from 'mongoose';
-import { RolesRepository } from '@roles/roles.repository';
-import { RoleDocument } from '@roles/models/role.schema';
-import { NotFoundException } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { CreateUserDto } from '@auth/users/dto/create-user.dto';
+import { CreatedUserValidationException } from '@auth/users/exceptions/created-user-validation.exception';
+import { ErrorType } from '@app/common/enums';
 
-export async function getRoleIdsFromRoleNames(
-  rolesRepository: RolesRepository,
-  roleNames: string[],
-): Promise<mongoose.Types.ObjectId[]> {
-  const roles = await rolesRepository.find({
-    name: { $in: roleNames },
-  });
-
-  if (roles.length !== roleNames.length) {
-    throw new NotFoundException('One or more roles not found');
+export async function validateCreateUser(createUserDto: CreateUserDto) {
+  if (await this.userExists(createUserDto)) {
+    throw new CreatedUserValidationException(
+      'User already exists',
+      ErrorType.USER_ALREADY_EXISTS,
+      HttpStatus.BAD_REQUEST,
+    );
   }
 
-  return roles.map((role: RoleDocument) => role._id);
+  if (!createUserDto.hasOwnProperty('roles')) {
+    throw new CreatedUserValidationException(
+      'User must have at least one role',
+      ErrorType.USER_MUST_HAVE_AT_LEAST_ONE_ROLE,
+      HttpStatus.BAD_REQUEST,
+    );
+  }
 }

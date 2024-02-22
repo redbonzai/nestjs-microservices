@@ -1,5 +1,4 @@
 import {
-  HttpStatus,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -9,11 +8,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UsersRepository } from './users.repository';
 import { GetUserDto } from './dto/get-user.dto';
 import { UserDocument } from '@app/common';
-import { CreatedUserValidationException } from './exceptions/created-user-validation.exception';
-import { ErrorType } from '@app/common/enums';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { getRoleIdsFromRoleNames } from './helpers/helpers';
 import { RolesRepository } from '@roles/roles.repository';
+import { Types } from 'mongoose';
+import { UpdateUserDto } from '@auth/users/dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -23,38 +20,12 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    if (await this.userExists(createUserDto)) {
-      throw new CreatedUserValidationException(
-        'User already exists',
-        ErrorType.USER_ALREADY_EXISTS,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    if (!createUserDto.hasOwnProperty('roles')) {
-      throw new CreatedUserValidationException(
-        'User must have at least one role',
-        ErrorType.USER_MUST_HAVE_AT_LEAST_ONE_ROLE,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    // if (createUserDto.password !== createUserDto.confirmPassword) {
-    //   throw new CreatedUserValidationException(
-    //     'Passwords do not match',
-    //     ErrorType.PASSWORDS_DO_NOT_MATCH,
-    //     HttpStatus.BAD_REQUEST,
-    //   );
-    // }
-
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-
     // Convert role strings to ObjectId's
-    const roleIds = await getRoleIdsFromRoleNames(
+    const roleIds = await this.rolesRepository.getRoleIdsFromRoleNames(
       this.rolesRepository,
       createUserDto.roles,
     );
-    console.log('ROLE IDS: ', roleIds);
 
     return await this.usersRepository.create({
       ...createUserDto,
@@ -119,5 +90,28 @@ export class UsersService {
 
   async getUserRolesAndPermissions(userId: string): Promise<string[]> {
     return await this.usersRepository.getUserRolesAndPermissions(userId);
+  }
+
+  async updateUserRoles(
+    userId: Types.ObjectId,
+    roles: string[],
+  ): Promise<UserDocument> {
+    // get all roles and permissions,
+    // user's roles to existing roles
+    return await this.usersRepository.syncUserRoles(userId, roles);
+  }
+
+  async updateUserPermissions(
+    userId: Types.ObjectId,
+    roleId: Types.ObjectId,
+    permissionNames: string[],
+  ): Promise<UserDocument> {
+    // get all roles and permissions,
+    // sync the permissions with the roles
+    return await this.usersRepository.syncPermissionsOnRoleId(
+      userId,
+      roleId,
+      permissionNames,
+    );
   }
 }
