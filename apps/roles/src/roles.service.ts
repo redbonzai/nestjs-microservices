@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateRoleDto, GetRoleDto, UpdateRoleDto } from '@roles/dto';
+import { CreateRoleDto, UpdateRoleDto } from '@roles/dto';
 import { RolesRepository } from './roles.repository';
 import { AbstractDocument } from '@app/common';
 import { PermissionsRepository } from '@permissions/permissions.repository';
-import { Role } from '@roles/interfaces';
 import { RoleDocument } from '@roles/models';
 import { Permission } from '@permissions/interfaces';
 

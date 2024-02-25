@@ -3,15 +3,14 @@ import { CreateUserDto } from '@auth/users/dto/create-user.dto';
 import { CreatedUserValidationException } from '@auth/users/exceptions/created-user-validation.exception';
 import { ErrorType } from '@app/common/enums';
 
-
 export async function validateCreateUser(createUserDto: CreateUserDto) {
-  if (await userExists(createUserDto)) {
-    throw new CreatedUserValidationException(
-      'User already exists',
-      ErrorType.USER_ALREADY_EXISTS,
-      HttpStatus.BAD_REQUEST,
-    );
-  }
+  // if (await userExists(createUserDto)) {
+  //   throw new CreatedUserValidationException(
+  //     'User already exists',
+  //     ErrorType.USER_ALREADY_EXISTS,
+  //     HttpStatus.BAD_REQUEST,
+  //   );
+  // }
 
   if (!createUserDto.hasOwnProperty('roles')) {
     throw new CreatedUserValidationException(

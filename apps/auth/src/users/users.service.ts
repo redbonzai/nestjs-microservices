@@ -8,7 +8,7 @@ import * as bcrypt from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersRepository } from './users.repository';
 import { GetUserDto } from './dto/get-user.dto';
-import { UserDocument } from '@app/common';
+import { UserDocument } from '@auth/users/models';
 import { RolesRepository } from '@roles/roles.repository';
 import { Types } from 'mongoose';
 import { UpdateUserDto } from '@auth/users/dto/update-user.dto';

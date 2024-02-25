@@ -1,5 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { AbstractRepository, UserDocument } from '@app/common';
+import { AbstractRepository } from '@app/common';
+import { UserDocument } from '@auth/users/models';
 import { InjectModel } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Model, Types } from 'mongoose';
