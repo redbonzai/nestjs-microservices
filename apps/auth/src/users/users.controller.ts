@@ -10,7 +10,7 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { CurrentUser, identifierToDTO, Roles } from '@app/common';
 import { JwtAuthGuard } from 'apps/auth/src/guards/jwt-auth.guard';
-import { UserDocument } from '@app/common';
+import { UserDocument } from '@auth/users/models';
 import { UsersService } from './users.service';
 import { GetUserDto } from './dto/get-user.dto';
 import { UpdateUserDto } from '@auth/users/dto/update-user.dto';

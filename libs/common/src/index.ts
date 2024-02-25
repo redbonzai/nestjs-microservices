@@ -1,7 +1,6 @@
 export * from './common.service';
 export * from './database';
 export * from './logger';
-export * from './models';
 export * from './auth';
 export * from './constants';
 export * from './decorators';
