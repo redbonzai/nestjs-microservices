@@ -13,7 +13,6 @@ import { JwtAuthGuard } from 'apps/auth/src/guards/jwt-auth.guard';
 import { UserDocument } from '@app/common';
 import { UsersService } from './users.service';
 import { GetUserDto } from './dto/get-user.dto';
-import { validateCreateUser } from '@auth/users/helpers/helpers';
 import { UpdateUserDto } from '@auth/users/dto/update-user.dto';
 import { Types } from 'mongoose';
 
@@ -24,7 +23,7 @@ export class UsersController {
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
     console.log('REQUEST BODY FOR CREATED RESERVATION : ', createUserDto);
-    await validateCreateUser(createUserDto);
+    await this.usersService.validateCreateUser(createUserDto);
     return this.usersService.create(createUserDto);
   }
 

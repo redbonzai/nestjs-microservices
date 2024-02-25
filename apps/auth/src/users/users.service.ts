@@ -1,4 +1,5 @@
 import {
+  HttpStatus,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -11,6 +12,8 @@ import { UserDocument } from '@app/common';
 import { RolesRepository } from '@roles/roles.repository';
 import { Types } from 'mongoose';
 import { UpdateUserDto } from '@auth/users/dto/update-user.dto';
+import { CreatedUserValidationException } from '@auth/users/exceptions/created-user-validation.exception';
+import { ErrorType } from '@app/common/enums';
 
 @Injectable()
 export class UsersService {
@@ -23,7 +26,6 @@ export class UsersService {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     // Convert role strings to ObjectId's
     const roleIds = await this.rolesRepository.getRoleIdsFromRoleNames(
-      this.rolesRepository,
       createUserDto.roles,
     );
 
@@ -59,12 +61,28 @@ export class UsersService {
     );
   }
 
-  private async userExists(createUserDto: CreateUserDto) {
+  async validateCreateUser(createUserDto: CreateUserDto) {
+    if (
+      !(await this.userExists(createUserDto)) &&
+      createUserDto.hasOwnProperty('roles')
+    ) {
+      return true;
+    }
+
+    throw new CreatedUserValidationException(
+      'User must have at least one role OR User already exists',
+      ErrorType.USER_MUST_HAVE_AT_LEAST_ONE_ROLE,
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+
+  async userExists(createUserDto: CreateUserDto) {
+    console.log('Checking if user exists', createUserDto);
     const user = await this.usersRepository.findOne({
       email: createUserDto.email,
     });
-
-    return Object(user).length > 0;
+    console.log('User EXISTS:', user);
+    return user !== null;
   }
 
   async verifyUser(email: string, password: string) {

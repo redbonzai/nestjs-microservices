@@ -59,7 +59,7 @@ export class RolesService {
     return await this.roleRepository.findOneAndDelete({ _id: id });
   }
 
-  async firstOrCreateRoles(roleData: CreateRoleDto[]): Promise<Role[]> {
+  async firstOrCreateRoles(roleData: CreateRoleDto[]): Promise<RoleDocument[]> {
     return this.roleRepository.firstOrCreateRoles(roleData);
   }
 }

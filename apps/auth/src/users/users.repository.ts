@@ -113,7 +113,7 @@ export class UsersRepository extends AbstractRepository<UserDocument> {
     const user = await this.userModel.findById(userId);
     this.ensureExists(user, `User with ID ${userId} not found`);
 
-    const roles = await this.rolesRepository.firstOrCreateRoles(roleNames);
+    const roles = await this.rolesRepository.firstOrCreateRoleNames(roleNames);
     this.ensureRolesFound(roles, roleNames);
 
     user.roles = roles.map((role: Role) => role._id);

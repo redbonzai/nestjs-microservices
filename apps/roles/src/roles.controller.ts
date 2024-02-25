@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto, UpdateRoleDto } from '@roles/dto';
-import { Role } from '@roles/interfaces';
+import { RoleDocument } from '@roles/models';
 
 @Controller('roles')
 export class RolesController {
@@ -41,7 +41,9 @@ export class RolesController {
   }
 
   @Post('batch')
-  async upsertRoles(@Body() roleData: CreateRoleDto[]): Promise<Role[]> {
+  async upsertRoles(
+    @Body() roleData: CreateRoleDto[],
+  ): Promise<RoleDocument[]> {
     return this.rolesService.firstOrCreateRoles(roleData);
   }
 }

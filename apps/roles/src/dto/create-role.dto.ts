@@ -13,5 +13,5 @@ export class CreateRoleDto {
   @IsArray()
   @IsString({ each: true })
   @IsNotEmpty({ each: true })
-  permissions: string[];
+  permissions?: string[];
 }

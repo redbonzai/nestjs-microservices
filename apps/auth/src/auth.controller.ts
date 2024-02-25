@@ -23,12 +23,11 @@ export class AuthController {
     @CurrentUser() user: UserDocument,
     @Res({ passthrough: true }) response: Response,
   ): Promise<UserDocument> {
-
     await this.authService.login(user, response);
     // response.send(user);
     const getUserDto: GetUserDto = await identifierToDTO(
       GetUserDto,
-      user._id.toString(),
+      user._id,
       '_id',
     );
     console.log('USER DTO RESPONSE: ', getUserDto);
