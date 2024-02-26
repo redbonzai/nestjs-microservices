@@ -107,6 +107,27 @@ export class UsersRepository extends AbstractRepository<UserDocument> {
     };
   }
 
+  async allUsersWithRolesAndPermissions(): Promise<UserDocument[]> {
+    try {
+      // Populate roles and then within each role, populate permissions
+      const users = await this.userModel.find({}).populate({
+        path: 'roles',
+        populate: {
+          path: 'permissions',
+          select: 'name permission',
+        },
+      });
+      // .exec();
+
+      if (!users || users.length === 0) {
+        throw new NotFoundException('No users found');
+      }
+
+      return users;
+    } catch (error) {
+      throw new NotFoundException('Failed to retrieve users');
+    }
+  }
   async syncUserRoles(
     userId: Types.ObjectId,
     roleNames: string[],

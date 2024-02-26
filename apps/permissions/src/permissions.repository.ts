@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { AbstractDocument, AbstractRepository } from '@app/common';
 import { PermissionDocument } from './models/permission.schema';
 import mongoose, { Model, Types } from 'mongoose';
@@ -36,7 +41,7 @@ export class PermissionsRepository extends AbstractRepository<AbstractDocument> 
     permissionNames: string[],
   ): Promise<mongoose.Types.ObjectId[]> {
     // Prepare permissions data with names
-    const permissionsData = permissionNames.map(name => ({ name }));
+    const permissionsData = permissionNames.map((name) => ({ name }));
 
     // Use firstOrCreatePermission to ensure all permissions exist
     const permissions = await this.firstOrCreate(permissionsData);
@@ -89,15 +94,14 @@ export class PermissionsRepository extends AbstractRepository<AbstractDocument> 
     console.log('PERMISSION: ', permissions);
 
     if (!permissions.length) {
-      throw new NotFoundException(
-        `Permissions not found`,
-      );
+      throw new NotFoundException(`Permissions not found`);
     }
 
     // Filter out permissions that are already part of the role
     const newPermissions = permissions.filter(
       (permission) =>
-        !role.permissions.some((rolePermId) => rolePermId.equals(permission._id),
+        !role.permissions.some((rolePermId) =>
+          rolePermId.equals(permission._id),
         ),
     );
 
@@ -116,20 +120,24 @@ export class PermissionsRepository extends AbstractRepository<AbstractDocument> 
     roleId: Types.ObjectId,
     permissionNames: string[],
   ): Promise<RoleDocument> {
-    const role: RoleDocument = await this.roleModel.findById(roleId);
+    console.log('ROLE ID: ', roleId);
+    console.log('PERMISSION NAMES: ', permissionNames);
+    const role = await this.roleModel.findById(roleId);
     if (!role) {
       throw new NotFoundException(`Role with ID ${roleId} not found`);
     }
 
+    console.log('ROLE found: ', role);
     // Find permissions by names
-    const permissions: Permission[] = await this.permissionModel.find({
+    const permissions: PermissionDocument[] = await this.permissionModel.find({
       name: { $in: permissionNames },
     });
+    console.log('PERMISSIONS: ', permissions);
 
-    // Set role's permissions
-    role.permissions = permissions.map(
-      (permission: Permission) => permission._id,
-    );
-    return role;
+    if (permissions.length) {
+      role.permissions.push(...permissions.map((permission) => permission._id));
+      await role.save();
+      return role;
+    }
   }
 }

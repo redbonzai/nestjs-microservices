@@ -74,7 +74,7 @@ import { RolesRepository } from '@roles/roles.repository';
     },
     PermissionsService,
     PermissionsRepository,
-    RolesRepository
+    RolesRepository,
   ],
 })
 export class PermissionsModule {}

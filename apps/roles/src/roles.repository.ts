@@ -28,7 +28,6 @@ export class RolesRepository extends AbstractRepository<AbstractDocument> {
     roleNames: string[],
   ): Promise<mongoose.Types.ObjectId[]> {
     const roles = await this.firstOrCreateRoleNames(roleNames);
-
     if (roles.length !== roleNames.length) {
       throw new NotFoundException('One or more roles not found');
     }
@@ -39,12 +38,10 @@ export class RolesRepository extends AbstractRepository<AbstractDocument> {
   async findByIdAndPopulatePermissions(
     roleId: Types.ObjectId,
   ): Promise<RoleDocument | null> {
-    const role = await this.roleModel.findById(roleId).populate({
+    return this.roleModel.findById(roleId).populate({
       path: 'permissions',
       select: 'name -_id',
     });
-    console.log('Role:', role);
-    return role;
   }
 
   // async firstOrCreateRoles(roles: CreateRoleDto[]): Promise<Role[]> {

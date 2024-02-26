@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { AbstractDocument } from '@app/common';
-import * as mongoose from 'mongoose';
 import { Types } from 'mongoose';
 
 @Schema({ versionKey: false, timestamps: true })

@@ -5,6 +5,7 @@ import { AbstractDocument } from '@app/common';
 import { PermissionsRepository } from '@permissions/permissions.repository';
 import { RoleDocument } from '@roles/models';
 import { Permission } from '@permissions/interfaces';
+import { Role } from '@roles/interfaces';
 
 @Injectable()
 export class RolesService {

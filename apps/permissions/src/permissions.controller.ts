@@ -24,7 +24,9 @@ export class PermissionsController {
   ) {}
 
   @Post('/')
-  async create(@Body() permissionDto: CreatePermissionDto): Promise<AbstractDocument> {
+  async create(
+    @Body() permissionDto: CreatePermissionDto,
+  ): Promise<AbstractDocument> {
     console.log('INCOMING PERMISSION CREATE REQUEST', permissionDto);
     return await this.permissionsService.create(permissionDto);
   }
@@ -62,7 +64,7 @@ export class PermissionsController {
     }
   }
 
-  @Patch(':roleId/permissions')
+  @Patch('roles/:roleId')
   async addPermissionsToRole(
     @Param('roleId') roleId: Types.ObjectId,
     @Body() addPermissionDto: AddPermissionsDto,
@@ -70,6 +72,17 @@ export class PermissionsController {
     return await this.permissionsService.addPermissionsToRole(
       roleId,
       addPermissionDto,
+    );
+  }
+
+  @Patch('sync/:roleId')
+  async synchPermissions(
+    @Param('roleId') roleId: Types.ObjectId,
+    @Body() permissionNames: string[],
+  ): Promise<AbstractDocument> {
+    return await this.permissionsService.syncPermissions(
+      roleId,
+      permissionNames,
     );
   }
 }

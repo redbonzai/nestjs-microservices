@@ -11,7 +11,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { CurrentUser } from '@auth/users/decorators';
 import { identifierToDTO } from '@app/common';
 import { Roles } from '@roles/decorators';
-import { JwtAuthGuard } from 'apps/auth/src/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import { UserDocument } from '@auth/users/models';
 import { UsersService } from './users.service';
 import { GetUserDto } from './dto/get-user.dto';
@@ -28,11 +28,6 @@ export class UsersController {
     await this.usersService.validateCreateUser(createUserDto);
     return this.usersService.create(createUserDto);
   }
-
-  // @Post('role')
-  // async addRole(@Body() body: any) {
-  //   return this.usersService.addRole(body.userId, body.roleId);
-  // }
 
   @Get()
   @UseGuards(JwtAuthGuard)
