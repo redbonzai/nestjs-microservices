@@ -24,7 +24,7 @@ export class UsersController {
 
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
-    console.log('REQUEST BODY FOR CREATED RESERVATION : ', createUserDto);
+    console.log('REQUEST BODY FOR USER CREATION : ', createUserDto);
     await this.usersService.validateCreateUser(createUserDto);
     return this.usersService.create(createUserDto);
   }

@@ -89,7 +89,31 @@ export class UsersRepository extends AbstractRepository<UserDocument> {
     return permissions;
   }
 
-  async getUserRolesAndPermissions(userId: string): Promise<any> {
+  // async rolesAndPermissions(): Promise<User[]> {
+  //   // Find all users and populate their roles and permissions
+  //   const users = await this.userModel
+  //     .find({})
+  //     .populate({
+  //       path: 'roles', // Path to the roles in the user document
+  //       populate: {
+  //         path: 'permissions', // Path to the permissions in the role document
+  //         select: 'name', // Select to only include the permission names
+  //       },
+  //       select: 'name', // Select to only include the role names
+  //     })
+  //     .exec();
+  //
+  //   // @ts-ignore
+  //   return users.map((user) => ({
+  //     ...user.toObject(),
+  //     roles: user.roles.map((role) => ({
+  //       ...role,
+  //       permissions: role.permissions.map((permission) => permission.name),
+  //     })),
+  //   }));
+  // }
+
+  async rolesAndPermissions(userId: string): Promise<any> {
     const user: User = await this.userModel.findById(userId).populate({
       path: 'roles',
       populate: { path: 'permissions' },

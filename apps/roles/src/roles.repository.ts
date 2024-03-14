@@ -27,34 +27,37 @@ export class RolesRepository extends AbstractRepository<AbstractDocument> {
   async getRoleIdsFromRoleNames(
     roleNames: string[],
   ): Promise<mongoose.Types.ObjectId[]> {
-    const roles = await this.firstOrCreateRoleNames(roleNames);
-    if (roles.length !== roleNames.length) {
+    const roleIds = await this.upsertRoles(roleNames);
+    if (roleIds.length !== roleNames.length) {
       throw new NotFoundException('One or more roles not found');
     }
 
+    return roleIds;
+  }
+
+  // async getRoleIdsFromRoleNames(
+  //   roleNames: string[],
+  // ): Promise<Types.ObjectId[]> {
+  //   const roles = await this.upsertRoles(roleNames);
+  //   if (roles.length !== roleNames.length) {
+  //     throw new NotFoundException('One or more roles not found');
+  //   }
+  //
+  //   return roles;
+  // }
+
+  async upsertRoles(names: string[]): Promise<Types.ObjectId[]> {
+    for (const name of names) {
+      const existingRole = await this.roleModel.findOne({ name }).exec();
+
+      if (existingRole) {
+        await this.roleModel.create({ name });
+      }
+    }
+    const roles = await this.firstOrCreateRoleNames(names);
+    console.log('ROLES TO RETURN: ', roles);
     return roles.map((role: Role) => role._id);
   }
-
-  async findByIdAndPopulatePermissions(
-    roleId: Types.ObjectId,
-  ): Promise<RoleDocument | null> {
-    return this.roleModel.findById(roleId).populate({
-      path: 'permissions',
-      select: 'name -_id',
-    });
-  }
-
-  // async firstOrCreateRoles(roles: CreateRoleDto[]): Promise<Role[]> {
-  //   return Promise.all(
-  //     roles.map(async (role) => {
-  //       return this.roleModel.findOneAndUpdate(
-  //         { role },
-  //         { $setOnInsert: { role } },
-  //         { new: true, upsert: true },
-  //       );
-  //     }),
-  //   );
-  // }
 
   async firstOrCreateRoles(roles: CreateRoleDto[]): Promise<RoleDocument[]> {
     return Promise.all(
@@ -69,6 +72,15 @@ export class RolesRepository extends AbstractRepository<AbstractDocument> {
           .exec(); // Ensure exec is called to execute the query
       }),
     );
+  }
+
+  async findByIdAndPopulatePermissions(
+    roleId: Types.ObjectId,
+  ): Promise<RoleDocument | null> {
+    return this.roleModel.findById(roleId).populate({
+      path: 'permissions',
+      select: 'name -_id',
+    });
   }
 
   async firstOrCreateRoleNames(roleNames: string[]): Promise<Role[]> {

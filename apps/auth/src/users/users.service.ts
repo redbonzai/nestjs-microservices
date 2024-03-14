@@ -29,12 +29,16 @@ export class UsersService {
       createUserDto.roles,
     );
 
-    return await this.usersRepository.create({
+    console.log('ROLE IDS ', roleIds);
+
+    const createdUser = await this.usersRepository.create({
       ...createUserDto,
       email: createUserDto.email.toLowerCase(),
       password: hashedPassword,
       roles: roleIds,
+      permissions: [],
     });
+    console.log('CREATED USER', createdUser);
   }
 
   async findAll() {

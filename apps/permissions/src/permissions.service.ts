@@ -19,7 +19,7 @@ export class PermissionsService {
     return this.permissionRepository.create(createPermissionDto);
   }
 
-  async upsertPermissions(permissionNames: string[]): Promise<void> {
+  async upsertPermissions(permissionNames: string[]): Promise<string[]> {
     return this.permissionRepository.upsertPermissions(permissionNames);
   }
   async update(

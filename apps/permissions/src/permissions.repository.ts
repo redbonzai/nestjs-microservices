@@ -50,7 +50,7 @@ export class PermissionsRepository extends AbstractRepository<AbstractDocument> 
     return permissions.map((permission) => permission._id);
   }
 
-  async upsertPermissions(names: string[]): Promise<void> {
+  async upsertPermissions(names: string[]): Promise<Types.ObjectId[]> {
     // Iterate over each name and upsert the permission.
     for (const name of names) {
       const existingPermission = await this.permissionModel
@@ -62,6 +62,23 @@ export class PermissionsRepository extends AbstractRepository<AbstractDocument> 
         await this.permissionModel.create({ name });
       }
     }
+
+    const permissions = await this.firstOrCreatePermissionNames(names);
+    return permissions.map((permission) => permission._id);
+  }
+
+  async firstOrCreatePermissionNames(
+    permissionNames: string[],
+  ): Promise<Permission[]> {
+    return Promise.all(
+      permissionNames.map(async (name: string) => {
+        return this.roleModel.findOneAndUpdate(
+          { name },
+          { $setOnInsert: { name } },
+          { new: true, upsert: true },
+        );
+      }),
+    );
   }
 
   async firstOrCreate(
