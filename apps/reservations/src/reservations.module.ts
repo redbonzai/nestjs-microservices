@@ -11,7 +11,8 @@ import {
   AUTH_SERVICE,
   PAYMENTS_SERVICE,
   ResponseInterceptor,
-  PERMISSIONS_SERVICE,
+  PERMISSIONS,
+  ROLES,
 } from '@app/common';
 import { ReservationsRepository } from './reservations.repository';
 import {
@@ -33,12 +34,15 @@ import { UsersRepository } from 'apps/auth/src/users/users.repository';
       validationSchema: Joi.object({
         MONGODB_URI: Joi.string().required(),
         PORT: Joi.number().required(),
+        TCP_PORT: Joi.number().required(),
         AUTH_HOST: Joi.string().required(),
-        PAYMENTS_HOST: Joi.string().required(),
         AUTH_PORT: Joi.number().required(),
-        PAYMENTS_PORT: Joi.number().required(),
+        ROLES_HOST: Joi.string().required(),
+        ROLES_PORT: Joi.number().required(),
         PERMISSIONS_HOST: Joi.string().required(),
         PERMISSIONS_PORT: Joi.number().required(),
+        PAYMENTS_HOST: Joi.string().required(),
+        PAYMENTS_PORT: Joi.number().required(),
       }),
     }),
     ClientsModule.registerAsync([
@@ -65,12 +69,23 @@ import { UsersRepository } from 'apps/auth/src/users/users.repository';
         inject: [ConfigService],
       },
       {
-        name: PERMISSIONS_SERVICE,
+        name: PERMISSIONS,
         useFactory: (configService: ConfigService) => ({
           transport: Transport.TCP,
           options: {
             host: configService.get('PERMISSIONS_HOST'),
             port: configService.get('PERMISSIONS_PORT'),
+          },
+        }),
+        inject: [ConfigService],
+      },
+      {
+        name: ROLES,
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: configService.get('ROLES_HOST'),
+            port: configService.get('ROLES_PORT'),
           },
         }),
         inject: [ConfigService],

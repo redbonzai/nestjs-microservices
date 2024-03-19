@@ -2,12 +2,11 @@ import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
-import { CurrentUser } from '@app/common';
+import { CurrentUser } from '@auth/users/decorators';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { UserDocument } from '@app/common';
+import { UserDocument } from '@auth/users/models';
 import { UsersService } from './users/users.service';
-import { identifierToDTO } from '@app/common';
 import { GetUserDto } from './users/dto/get-user.dto';
 
 @Controller('auth')
@@ -25,12 +24,7 @@ export class AuthController {
   ): Promise<UserDocument> {
     await this.authService.login(user, response);
     // response.send(user);
-    const getUserDto: GetUserDto = await identifierToDTO(
-      GetUserDto,
-      user._id.toString(),
-      '_id',
-    );
-    console.log('USER DTO RESPONSE: ', getUserDto);
+    const getUserDto: GetUserDto = user._id;
     return this.usersService.getCurrentUser(getUserDto);
   }
 

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
-import { UserDocument } from '@app/common';
+import { UserDocument } from '@auth/users/models';
 import { TokenPayload } from './interfaces/token-payload.interface';
 
 @Injectable()
@@ -12,23 +12,27 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
   async login(user: UserDocument, response: Response) {
-    const tokenPayload: TokenPayload = {
-      userId: user._id.toHexString(),
-    };
+    try {
+      const tokenPayload: TokenPayload = {
+        userId: user._id,
+      };
 
-    const expires = new Date();
-    expires.setSeconds(
-      expires.getSeconds() + this.configService.get('JWT_EXPIRATION'),
-    );
+      const expires = new Date();
+      expires.setSeconds(
+        expires.getSeconds() + this.configService.get('JWT_EXPIRATION'),
+      );
 
-    const token = this.jwtService.sign(tokenPayload);
-    console.log('TOKEN IN AUTH.SERVICE: ', token);
-    response.cookie('Authentication', token, {
-      httpOnly: true,
-      expires,
-    });
+      const token = this.jwtService.sign(tokenPayload);
+      response.cookie('Authentication', token, {
+        httpOnly: true,
+        expires,
+      });
 
-    return token;
+      return token;
+    } catch (error) {
+      console.log('ERROR IN LOGIN: ', error);
+      throw new Error(error.message);
+    }
   }
 
   async logout(response: Response): Promise<{ message: string }> {

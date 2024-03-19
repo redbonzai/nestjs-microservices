@@ -31,7 +31,6 @@ export async function identifierToDTO<
     throw new Error(`Validation error: ${JSON.stringify(validationErrors)}`);
   }
 
-  // Return the validated DTO instance.
   return dtoInstance;
 }
 

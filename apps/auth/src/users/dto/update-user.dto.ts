@@ -6,8 +6,12 @@ import {
   IsString,
   IsStrongPassword,
 } from 'class-validator';
+import { Types } from 'mongoose';
 
 export class UpdateUserDto {
+  @IsNotEmpty()
+  _id: Types.ObjectId;
+
   @IsOptional()
   @IsEmail()
   email?: string;

@@ -23,6 +23,42 @@
       ],
       "@app/common/*": [
         "libs/common/src/*"
+      ],
+      "@auth": [
+        "apps/auth/src"
+      ],
+      "@auth/*": [
+        "apps/auth/src/*"
+      ],
+      "@notifications": [
+        "apps/notifications/src"
+      ],
+      "@notifications/*": [
+        "apps/notifications/src/*"
+      ],
+      "@payments": [
+        "apps/payments/src"
+      ],
+      "@payments/*": [
+        "apps/payments/src/*"
+      ],
+      "@roles": [
+        "apps/roles/src"
+      ],
+      "@roles/*": [
+        "apps/roles/src/*"
+      ],
+      "@permissions": [
+        "apps/permissions/src"
+      ],
+      "@permissions/*": [
+        "apps/permissions/src/*"
+      ],
+      "@reservations": [
+        "apps/reservations/src"
+      ],
+      "@reservations/*": [
+        "apps/reservations/src/*"
       ]
     }
   }

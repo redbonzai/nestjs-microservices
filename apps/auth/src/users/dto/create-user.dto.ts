@@ -8,6 +8,8 @@ import {
 } from 'class-validator';
 
 export class CreateUserDto {
+  _id?: string;
+
   @IsEmail()
   email: string;
 
@@ -19,4 +21,10 @@ export class CreateUserDto {
   @IsString({ each: true })
   @IsNotEmpty({ each: true })
   roles?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  permissions?: string[];
 }

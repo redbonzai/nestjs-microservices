@@ -24,7 +24,7 @@ spec:
                   name: mongodb
                   key: connectionString
             - name: PORT
-              value: '3246'
+              value: '3005'
             - name: AUTH_HOST
               value: auth-tcp
             - name: AUTH_PORT

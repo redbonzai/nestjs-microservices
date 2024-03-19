@@ -19,7 +19,7 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   }
 
   async findOne(filterQuery: FilterQuery<TDocument>): Promise<TDocument> {
-    return await this.model.findOne(filterQuery).lean<TDocument>(true);
+    return this.model.findOne(filterQuery).lean<TDocument>(true);
 
     // if (!document) {
     //   this.logger.warn('Document not found with filterQuery', filterQuery);

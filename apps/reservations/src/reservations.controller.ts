@@ -11,7 +11,9 @@ import {
 import { ReservationsService } from './reservations.service';
 import { CreateReservationDto, UpdateReservationDto } from './dto';
 import { JwtAuthGuard } from '@app/common/auth';
-import { CurrentUser, Roles, UserDto } from '@app/common';
+import { Roles } from '@roles/decorators';
+import { CurrentUser } from '@auth/users/decorators';
+import { UserDto } from '@app/common';
 import { UsersService } from 'apps/auth/src/users/users.service';
 import { ReservationDocument } from './models/reservation.schema';
 
@@ -24,7 +26,7 @@ export class ReservationsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async create(
     @Body() createReservationDto: CreateReservationDto,
     @CurrentUser() user: UserDto,
@@ -35,7 +37,7 @@ export class ReservationsController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async findAll() {
     return await this.reservationsService.findAll();
   }
