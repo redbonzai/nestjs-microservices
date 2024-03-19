@@ -32,7 +32,6 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         ROLES_PORT: Joi.number().required(),
         // PERMISSIONS_HOST: Joi.string().required(),
         // PERMISSIONS_PORT: Joi.number().required(),
-
       }),
     }),
     JwtModule.registerAsync({
